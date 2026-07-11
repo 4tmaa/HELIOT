@@ -1,0 +1,29 @@
+﻿{
+  "project_info": {
+    "project_number": "458313191176",
+    "project_id": "iotplatfrom",
+    "storage_bucket": "iotplatfrom.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458313191176:android:e1e1f02d3106cc4aa1e6bd",
+        "android_client_info": {
+          "package_name": "com.example.heliot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1naFiAaQAvEAVoGkXgHhUn4AF0oXYelk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
