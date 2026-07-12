@@ -338,17 +338,17 @@ class DetailPesananScreen extends StatelessWidget {
     final bool hasFinalPrice =
         orderData['final_price'] != null && orderData['final_price'] > 0;
 
-    int _mcuCost = 0;
+    int mcuCost = 0;
     if (orderData['mcu_list'] is List) {
       for (var item in orderData['mcu_list']) {
-        _mcuCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
+        mcuCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
       }
     }
 
-    int _sensorCost = 0;
+    int sensorCost = 0;
     if (orderData['sensor_list'] is List) {
       for (var item in orderData['sensor_list']) {
-        _sensorCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
+        sensorCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
       }
     }
 
@@ -357,14 +357,14 @@ class DetailPesananScreen extends StatelessWidget {
     final pwrSpec = _parseSpec(orderData['power_supply']);
     final encSpec = _parseSpec(orderData['enclosure']);
 
-    int _connCost = (connSpec?['base_price'] as num?)?.toInt() ?? 0;
-    int _outCost = (outSpec?['base_price'] as num?)?.toInt() ?? 0;
-    int _pwrCost = (pwrSpec?['base_price'] as num?)?.toInt() ?? 0;
-    int _encCost = (encSpec?['base_price'] as num?)?.toInt() ?? 0;
+    int connCost = (connSpec?['base_price'] as num?)?.toInt() ?? 0;
+    int outCost = (outSpec?['base_price'] as num?)?.toInt() ?? 0;
+    int pwrCost = (pwrSpec?['base_price'] as num?)?.toInt() ?? 0;
+    int encCost = (encSpec?['base_price'] as num?)?.toInt() ?? 0;
 
-    int _identifiedComponentCost = _mcuCost + _sensorCost + _connCost + _outCost + _pwrCost + _encCost;
-    int _actualComponentCost = ((orderData['estimated_price'] as num?)?.toInt() ?? 0) - ((orderData['service_fee'] as num?)?.toInt() ?? 0);
-    int _unexplainedCost = _actualComponentCost - _identifiedComponentCost;
+    int identifiedComponentCost = mcuCost + sensorCost + connCost + outCost + pwrCost + encCost;
+    int actualComponentCost = ((orderData['estimated_price'] as num?)?.toInt() ?? 0) - ((orderData['service_fee'] as num?)?.toInt() ?? 0);
+    int unexplainedCost = actualComponentCost - identifiedComponentCost;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -563,14 +563,14 @@ class DetailPesananScreen extends StatelessWidget {
                   Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
                   
-                  _buildCostRow('Mikrokontroler', _mcuCost),
-                  _buildCostRow('Sensor & Aktuator', _sensorCost),
-                  _buildCostRow('Konektivitas', _connCost),
-                  _buildCostRow('Platform Output', _outCost),
-                  _buildCostRow('Sumber Daya', _pwrCost),
-                  _buildCostRow('Bentuk Fisik', _encCost),
-                  if (_unexplainedCost > 0)
-                    _buildCostRow('Spesifikasi Lainnya', _unexplainedCost),
+                  _buildCostRow('Mikrokontroler', mcuCost),
+                  _buildCostRow('Sensor & Aktuator', sensorCost),
+                  _buildCostRow('Konektivitas', connCost),
+                  _buildCostRow('Platform Output', outCost),
+                  _buildCostRow('Sumber Daya', pwrCost),
+                  _buildCostRow('Bentuk Fisik', encCost),
+                  if (unexplainedCost > 0)
+                    _buildCostRow('Spesifikasi Lainnya', unexplainedCost),
                   
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
