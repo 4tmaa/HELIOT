@@ -91,31 +91,45 @@ class _BerandaScreenState extends State<BerandaScreen> {
   Future<void> fetchBannerData() async {
     try {
       final cached = await LocalDatabaseService.instance.getCachedData(
-        'banners', maxAge: null,
+        'banners',
+        maxAge: null,
       );
-      
+
       if (cached != null) {
         if (mounted) {
           setState(() {
-            bannerList = List<dynamic>.from(cached).where((e) => e['is_deleted'] != true).toList();
+            bannerList = List<dynamic>.from(
+              cached,
+            ).where((e) => e['is_deleted'] != true).toList();
             isLoadingBanners = false;
           });
         }
-        
-        final lastSync = LocalDatabaseService.instance.getMaxUpdatedAt(List<dynamic>.from(cached));
+
+        final lastSync = LocalDatabaseService.instance.getMaxUpdatedAt(
+          List<dynamic>.from(cached),
+        );
         final delta = await supabaseClient
             .from('banners')
             .select()
             .gt('updated_at', lastSync);
-            
+
         if (delta.isNotEmpty) {
-          final merged = LocalDatabaseService.instance.mergeData(List<dynamic>.from(cached), delta);
+          final merged = LocalDatabaseService.instance.mergeData(
+            List<dynamic>.from(cached),
+            delta,
+          );
           await LocalDatabaseService.instance.saveToCache('banners', merged);
           if (mounted) {
             setState(() {
-              bannerList = merged.where((e) => e['is_deleted'] != true).toList();
+              bannerList = merged
+                  .where((e) => e['is_deleted'] != true)
+                  .toList();
               // Sort manually since merge might mess up the order
-              bannerList.sort((a, b) => (b['created_at'] ?? '').toString().compareTo((a['created_at'] ?? '').toString()));
+              bannerList.sort(
+                (a, b) => (b['created_at'] ?? '').toString().compareTo(
+                  (a['created_at'] ?? '').toString(),
+                ),
+              );
             });
           }
         }
@@ -133,7 +147,9 @@ class _BerandaScreenState extends State<BerandaScreen> {
 
         if (mounted) {
           setState(() {
-            bannerList = responseData.where((e) => e['is_deleted'] != true).toList();
+            bannerList = responseData
+                .where((e) => e['is_deleted'] != true)
+                .toList();
             isLoadingBanners = false;
           });
         }
@@ -146,31 +162,46 @@ class _BerandaScreenState extends State<BerandaScreen> {
   Future<void> fetchTemplateData() async {
     try {
       final cached = await LocalDatabaseService.instance.getCachedData(
-        'templates_home', maxAge: null,
+        'templates_home',
+        maxAge: null,
       );
-      
+
       if (cached != null) {
         if (mounted) {
           setState(() {
-            templateList = List<dynamic>.from(cached).where((e) => e['is_deleted'] != true).toList();
+            templateList = List<dynamic>.from(
+              cached,
+            ).where((e) => e['is_deleted'] != true).toList();
             isLoadingTemplates = false;
           });
         }
-        
-        final lastSync = LocalDatabaseService.instance.getMaxUpdatedAt(List<dynamic>.from(cached));
+
+        final lastSync = LocalDatabaseService.instance.getMaxUpdatedAt(
+          List<dynamic>.from(cached),
+        );
         final delta = await supabaseClient
             .from('templates')
             .select()
             .gt('updated_at', lastSync);
-            
+
         if (delta.isNotEmpty) {
-          final merged = LocalDatabaseService.instance.mergeData(List<dynamic>.from(cached), delta);
-          await LocalDatabaseService.instance.saveToCache('templates_home', merged);
+          final merged = LocalDatabaseService.instance.mergeData(
+            List<dynamic>.from(cached),
+            delta,
+          );
+          await LocalDatabaseService.instance.saveToCache(
+            'templates_home',
+            merged,
+          );
           if (mounted) {
             setState(() {
-              final activeTemplates = merged.where((e) => e['is_deleted'] != true).toList();
+              final activeTemplates = merged
+                  .where((e) => e['is_deleted'] != true)
+                  .toList();
               // Sort arbitrarily or by created_at, then limit to 5
-              activeTemplates.sort((a, b) => (b['id'] ?? 0).compareTo((a['id'] ?? 0)));
+              activeTemplates.sort(
+                (a, b) => (b['id'] ?? 0).compareTo((a['id'] ?? 0)),
+              );
               templateList = activeTemplates.take(5).toList();
             });
           }
@@ -178,7 +209,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
           // just apply limit 5 in UI
           if (mounted) {
             setState(() {
-               templateList = templateList.take(5).toList();
+              templateList = templateList.take(5).toList();
             });
           }
         }
@@ -195,7 +226,9 @@ class _BerandaScreenState extends State<BerandaScreen> {
 
         if (mounted) {
           setState(() {
-            final activeTemplates = responseData.where((e) => e['is_deleted'] != true).toList();
+            final activeTemplates = responseData
+                .where((e) => e['is_deleted'] != true)
+                .toList();
             templateList = activeTemplates.take(5).toList();
             isLoadingTemplates = false;
           });
@@ -253,70 +286,77 @@ class _BerandaScreenState extends State<BerandaScreen> {
                     SafeArea(
                       bottom: false,
                       child: Container(
-                        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
+                        height: 90,
+                        padding: const EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                          bottom: 16,
+                        ),
                         alignment: Alignment.bottomCenter,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Selamat Datang,',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                userName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.5),
-                              ),
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
-                                  icon: Icon(
-                                    hasUnreadNotifications
-                                        ? Icons.notifications_active_rounded
-                                        : Icons.notifications_none_rounded,
-                                    color: Colors.white,
+                                Text(
+                                  'Selamat Datang,',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontSize: 14,
                                   ),
-                                  onPressed: navigateToNotifications,
                                 ),
-                                if (hasUnreadNotifications)
-                                  Positioned(
-                                    top: 10,
-                                    right: 12,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.orangeAccent,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  userName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
                                   ),
+                                ),
                               ],
                             ),
-                          ),
-                        ],
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                              ),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      hasUnreadNotifications
+                                          ? Icons.notifications_active_rounded
+                                          : Icons.notifications_none_rounded,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: navigateToNotifications,
+                                  ),
+                                  if (hasUnreadNotifications)
+                                    Positioned(
+                                      top: 10,
+                                      right: 12,
+                                      child: Container(
+                                        width: 10,
+                                        height: 10,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.orangeAccent,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
