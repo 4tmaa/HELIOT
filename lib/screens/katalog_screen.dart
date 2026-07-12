@@ -21,7 +21,15 @@ class _KatalogScreenState extends State<KatalogScreen> {
   bool isLoading = true;
   int _selectedIndex = 0;
   String _searchQuery = '';
-  final List<String> _categories = ['Semua', 'Mikrokontroler', 'Sensor', 'Aktuator', 'Komunikasi', 'Display', 'Lainnya'];
+  final List<String> _categories = [
+    'Semua',
+    'Mikrokontroler',
+    'Sensor',
+    'Aktuator',
+    'Komunikasi',
+    'Display',
+    'Lainnya',
+  ];
 
   @override
   void initState() {
@@ -37,30 +45,46 @@ class _KatalogScreenState extends State<KatalogScreen> {
 
   Future<void> fetchComponentData() async {
     try {
-      final cached = await LocalDatabaseService.instance.getCachedData('components', maxAge: null);
+      final cached = await LocalDatabaseService.instance.getCachedData(
+        'components',
+        maxAge: null,
+      );
 
       if (cached != null) {
         if (mounted) {
           setState(() {
-            componentList = List<dynamic>.from(cached).where((e) => e['is_deleted'] != true).toList();
+            componentList = List<dynamic>.from(
+              cached,
+            ).where((e) => e['is_deleted'] != true).toList();
             isLoading = false;
           });
         }
-        
-        final lastSync = LocalDatabaseService.instance.getMaxUpdatedAt(List<dynamic>.from(cached));
+
+        final lastSync = LocalDatabaseService.instance.getMaxUpdatedAt(
+          List<dynamic>.from(cached),
+        );
         final delta = await Supabase.instance.client
             .from('components')
             .select()
             .gt('updated_at', lastSync);
-        
+
         if (delta.isNotEmpty) {
-          final merged = LocalDatabaseService.instance.mergeData(List<dynamic>.from(cached), delta);
+          final merged = LocalDatabaseService.instance.mergeData(
+            List<dynamic>.from(cached),
+            delta,
+          );
           await LocalDatabaseService.instance.saveToCache('components', merged);
           if (mounted) {
             setState(() {
-              final activeComponents = merged.where((e) => e['is_deleted'] != true).toList();
+              final activeComponents = merged
+                  .where((e) => e['is_deleted'] != true)
+                  .toList();
               // Sort by name
-              activeComponents.sort((a, b) => (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString()));
+              activeComponents.sort(
+                (a, b) => (a['name'] ?? '').toString().compareTo(
+                  (b['name'] ?? '').toString(),
+                ),
+              );
               componentList = activeComponents;
             });
           }
@@ -70,11 +94,16 @@ class _KatalogScreenState extends State<KatalogScreen> {
             .from('components')
             .select()
             .order('name');
-            
-        await LocalDatabaseService.instance.saveToCache('components', responseData);
+
+        await LocalDatabaseService.instance.saveToCache(
+          'components',
+          responseData,
+        );
         if (mounted) {
           setState(() {
-            componentList = responseData.where((e) => e['is_deleted'] != true).toList();
+            componentList = responseData
+                .where((e) => e['is_deleted'] != true)
+                .toList();
             isLoading = false;
           });
         }
@@ -99,7 +128,9 @@ class _KatalogScreenState extends State<KatalogScreen> {
     if (_selectedIndex > 0 && _selectedIndex < _categories.length) {
       final selectedCategory = _categories[_selectedIndex];
       filtered = filtered
-          .where((item) => item['category'].toString().contains(selectedCategory))
+          .where(
+            (item) => item['category'].toString().contains(selectedCategory),
+          )
           .toList();
     }
 
@@ -127,116 +158,130 @@ class _KatalogScreenState extends State<KatalogScreen> {
       ),
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Row(
-                children: [
-                  const Text(
-                    'Katalog Komponen',
-                    style: TextStyle(
-                      color: AppColors.mainTextColor,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 28,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Container(
-                height: 55,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryColor,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                child: Row(
+                  children: [
+                    const Text(
+                      'Katalog Komponen',
+                      style: TextStyle(
+                        color: AppColors.mainTextColor,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 28,
+                        letterSpacing: -0.5,
+                      ),
                     ),
                   ],
                 ),
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Cari komponen...',
-                            hintStyle: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                            border: InputBorder.none,
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: Colors.white,
-                            ),
-                            suffixIcon: PopupMenuButton<int>(
-                              icon: const Icon(
-                                Icons.tune,
-                                color: Colors.white,
-                              ),
-                              onSelected: (int index) {
-                                setState(() {
-                                  _selectedIndex = index;
-                                });
-                              },
-                              itemBuilder: (BuildContext context) {
-                                return List.generate(_categories.length, (
-                                  index,
-                                ) {
-                                  return PopupMenuItem<int>(
-                                    value: index,
-                                    child: Text(
-                                      _categories[index],
-                                      style: TextStyle(
-                                        color: _selectedIndex == index
-                                            ? AppColors.primaryColor
-                                            : AppColors.mainTextColor,
-                                        fontWeight: _selectedIndex == index
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  );
-                                });
-                              },
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 18,
-                            ),
-                          ),
-                          cursorColor: Colors.white,
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
               ),
-            ),
-            const SizedBox(height: 8),
-          Expanded(
-            child: isLoading
-                ? _buildShimmerLoading()
-                : AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: _buildBookCatalog(
-                      filteredList,
-                      ValueKey<String>('${_selectedIndex}_$_searchQuery'),
-                    ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
+                ),
+                child: Container(
+                  height: 55,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Cari komponen...',
+                      hintStyle: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                      border: InputBorder.none,
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(Icons.search, color: Colors.white, size: 18),
+                        ),
+                      ),
+                      suffixIcon: PopupMenuButton<int>(
+                        icon: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(Icons.tune, color: Colors.white, size: 18),
+                        ),
+                        onSelected: (int index) {
+                          setState(() {
+                            _selectedIndex = index;
+                          });
+                        },
+                        itemBuilder: (BuildContext context) {
+                          return List.generate(_categories.length, (index) {
+                            return PopupMenuItem<int>(
+                              value: index,
+                              child: Text(
+                                _categories[index],
+                                style: TextStyle(
+                                  color: _selectedIndex == index
+                                      ? AppColors.primaryColor
+                                      : AppColors.mainTextColor,
+                                  fontWeight: _selectedIndex == index
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            );
+                          });
+                        },
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 18),
+                    ),
+                    cursorColor: Colors.white,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: isLoading
+                    ? _buildShimmerLoading()
+                    : AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: _buildBookCatalog(
+                          filteredList,
+                          ValueKey<String>('${_selectedIndex}_$_searchQuery'),
+                        ),
+                      ),
+              ),
+            ],
           ),
-        ],
-      ),
-      ),
+        ),
       ),
     );
   }
