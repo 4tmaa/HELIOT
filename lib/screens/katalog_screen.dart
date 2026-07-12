@@ -37,7 +37,10 @@ class _KatalogScreenState extends State<KatalogScreen> {
 
   Future<void> fetchComponentData() async {
     try {
-      final responseData = await Supabase.instance.client.from('components').select().order('name');
+      final responseData = await Supabase.instance.client
+          .from('components')
+          .select()
+          .order('name');
       if (mounted) {
         setState(() {
           componentList = responseData;
@@ -49,7 +52,11 @@ class _KatalogScreenState extends State<KatalogScreen> {
         setState(() {
           isLoading = false;
         });
-        CustomToast.show(context, message: 'Gagal memuat katalog', type: ToastType.error);
+        CustomToast.show(
+          context,
+          message: 'Gagal memuat katalog',
+          type: ToastType.error,
+        );
       }
     }
   }
@@ -58,9 +65,13 @@ class _KatalogScreenState extends State<KatalogScreen> {
     List<dynamic> filtered = componentList;
 
     if (_selectedIndex == 1) {
-      filtered = filtered.where((item) => item['category'] == 'Mikrokontroler').toList();
+      filtered = filtered
+          .where((item) => item['category'] == 'Mikrokontroler')
+          .toList();
     } else if (_selectedIndex == 2) {
-      filtered = filtered.where((item) => item['category'].toString().contains('Sensor')).toList();
+      filtered = filtered
+          .where((item) => item['category'].toString().contains('Sensor'))
+          .toList();
     }
 
     if (_searchQuery.isNotEmpty) {
@@ -80,93 +91,135 @@ class _KatalogScreenState extends State<KatalogScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(32), bottomRight: Radius.circular(32)),
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: HeaderWavePainter(),
-                    ),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(32),
+              bottomRight: Radius.circular(32),
+            ),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: CustomPaint(painter: HeaderWavePainter()),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(
+                    24,
+                    MediaQuery.of(context).padding.top + 24,
+                    24,
+                    20,
                   ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(24, MediaQuery.of(context).padding.top + 24, 24, 20),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 55,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 5))],
-                          ),
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              setState(() {
-                                _searchQuery = value;
-                              });
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Cari komponen...',
-                              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                              border: InputBorder.none,
-                              prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
-                              suffixIcon: PopupMenuButton<int>(
-                                icon: const Icon(Icons.tune, color: AppColors.primaryColor),
-                                onSelected: (int index) {
-                                  setState(() {
-                                    _selectedIndex = index;
-                                  });
-                                },
-                                itemBuilder: (BuildContext context) {
-                                  return List.generate(_categories.length, (index) {
-                                    return PopupMenuItem<int>(
-                                      value: index,
-                                      child: Text(
-                                        _categories[index],
-                                        style: TextStyle(
-                                          color: _selectedIndex == index ? AppColors.primaryColor : AppColors.mainTextColor,
-                                          fontWeight: _selectedIndex == index ? FontWeight.bold : FontWeight.normal,
-                                        ),
-                                      ),
-                                    );
-                                  });
-                                },
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 18),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 55,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
                             ),
-                            style: const TextStyle(color: AppColors.mainTextColor),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Cari komponen...',
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 14,
+                            ),
+                            border: InputBorder.none,
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: AppColors.primaryColor,
+                            ),
+                            suffixIcon: PopupMenuButton<int>(
+                              icon: const Icon(
+                                Icons.tune,
+                                color: AppColors.primaryColor,
+                              ),
+                              onSelected: (int index) {
+                                setState(() {
+                                  _selectedIndex = index;
+                                });
+                              },
+                              itemBuilder: (BuildContext context) {
+                                return List.generate(_categories.length, (
+                                  index,
+                                ) {
+                                  return PopupMenuItem<int>(
+                                    value: index,
+                                    child: Text(
+                                      _categories[index],
+                                      style: TextStyle(
+                                        color: _selectedIndex == index
+                                            ? AppColors.primaryColor
+                                            : AppColors.mainTextColor,
+                                        fontWeight: _selectedIndex == index
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  );
+                                });
+                              },
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 18,
+                            ),
+                          ),
+                          style: const TextStyle(
+                            color: AppColors.mainTextColor,
                           ),
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: isLoading
+                ? _buildShimmerLoading()
+                : AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _buildBookCatalog(
+                      filteredList,
+                      ValueKey<String>('${_selectedIndex}_$_searchQuery'),
                     ),
                   ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: isLoading
-                  ? _buildShimmerLoading()
-                  : AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: _buildBookCatalog(filteredList, ValueKey<String>('${_selectedIndex}_$_searchQuery')),
-                    ),
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildBookCatalog(List<dynamic> listData, Key key) {
     if (listData.isEmpty) {
-      return Center(key: key, child: const Text('Komponen tidak ditemukan', style: TextStyle(color: AppColors.secondaryTextColor)));
+      return Center(
+        key: key,
+        child: const Text(
+          'Komponen tidak ditemukan',
+          style: TextStyle(color: AppColors.secondaryTextColor),
+        ),
+      );
     }
 
     final dynamic heroProduct = listData.first;
-    final List<dynamic> gridProducts = listData.length > 1 ? listData.sublist(1) : [];
+    final List<dynamic> gridProducts = listData.length > 1
+        ? listData.sublist(1)
+        : [];
 
     return CustomScrollView(
       key: key,
@@ -174,7 +227,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
         SliverToBoxAdapter(child: FeaturedComponentCard(product: heroProduct)),
         if (gridProducts.isNotEmpty)
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -183,7 +236,8 @@ class _KatalogScreenState extends State<KatalogScreen> {
                 childAspectRatio: 0.62,
               ),
               delegate: SliverChildBuilderDelegate(
-                (context, index) => GridComponentCard(product: gridProducts[index]),
+                (context, index) =>
+                    GridComponentCard(product: gridProducts[index]),
                 childCount: gridProducts.length,
               ),
             ),

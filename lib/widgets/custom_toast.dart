@@ -26,7 +26,6 @@ class CustomToast {
         icon = Icons.warning_amber_rounded;
         break;
       case ToastType.info:
-      default:
         backgroundColor = Colors.blue.shade600;
         icon = Icons.info_outline_rounded;
         break;
