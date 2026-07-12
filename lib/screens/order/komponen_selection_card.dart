@@ -106,133 +106,136 @@ class KomponenSelectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isSelectedTBD = selectedValue != null && selectedValue!['is_tbd'] == true;
-    final String selectedTBDLabel = selectedValue != null ? (selectedValue!['tbd_label'] ?? 'Harga Menyusul') : '';
+    final bool isSelected = selectedValue != null;
+    final bool isSelectedTBD = isSelected && selectedValue!['is_tbd'] == true;
+    final String selectedTBDLabel = isSelected ? (selectedValue!['tbd_label'] ?? 'Harga Menyusul') : '';
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(color: AppColors.mainTextColor, fontSize: 14, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text(subtitle, style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 12)),
-        const SizedBox(height: 12),
-        GestureDetector(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           onTap: isLoading ? null : () => _showSelectionModal(context),
+          borderRadius: BorderRadius.circular(16),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutQuint,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              color: isSelected ? AppColors.primaryColor.withValues(alpha: 0.02) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: selectedValue != null ? AppColors.primaryColor.withValues(alpha: 0.6) : Colors.grey.shade200,
-                width: selectedValue != null ? 1.5 : 1,
+                color: isSelected ? AppColors.primaryColor.withValues(alpha: 0.5) : Colors.grey.shade300,
+                width: isSelected ? 1.5 : 1,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: selectedValue != null ? AppColors.primaryColor.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                )
-              ],
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: selectedValue != null 
-                        ? [AppColors.primaryColor, AppColors.primaryColor.withValues(alpha: 0.8)]
-                        : [Colors.grey.shade100, Colors.grey.shade200],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: selectedValue != null ? [
-                      BoxShadow(
-                        color: AppColors.primaryColor.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      )
-                    ] : [],
+                    color: isSelected ? AppColors.primaryColor.withValues(alpha: 0.1) : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: selectedValue != null ? Colors.white : Colors.grey.shade600, size: 26),
+                  child: Icon(icon, color: isSelected ? AppColors.primaryColor : Colors.grey.shade600, size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        selectedValue != null ? selectedValue!['name'] : 'Ketuk untuk memilih',
-                        style: TextStyle(
-                          color: selectedValue != null ? AppColors.mainTextColor : AppColors.secondaryTextColor, 
-                          fontSize: 16, 
-                          fontWeight: selectedValue != null ? FontWeight.w800 : FontWeight.normal
-                        ),
-                      ),
-                      if (selectedValue != null) ...[
-                        const SizedBox(height: 6),
+                      Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.mainTextColor)),
+                      const SizedBox(height: 4),
+                      Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.secondaryTextColor)),
+                      
+                      const SizedBox(height: 12),
+                      if (isSelected) ...[
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           decoration: BoxDecoration(
-                            color: isSelectedTBD ? Colors.orange.withValues(alpha: 0.1) : AppColors.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.primaryColor.withValues(alpha: 0.2)),
+                            boxShadow: [
+                              BoxShadow(color: AppColors.primaryColor.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))
+                            ],
                           ),
-                          child: Text(
-                            isSelectedTBD 
-                                ? selectedTBDLabel 
-                                : ((selectedValue!['base_price'] as num).toInt() == 0 ? 'Gratis' : '+ ${_formatCurrency((selectedValue!['base_price'] as num).toInt())}'),
-                            style: TextStyle(
-                              color: isSelectedTBD ? Colors.orange.shade800 : AppColors.primaryColor, 
-                              fontSize: 12, 
-                              fontWeight: FontWeight.w900
-                            ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.check_circle, size: 16, color: AppColors.primaryColor),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  selectedValue!['name'],
+                                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryColor, fontSize: 13),
+                                ),
+                              ),
+                              if (quantity != null && onQuantityChanged != null) ...[
+                                Container(
+                                  margin: const EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      InkWell(
+                                        onTap: quantity! > 1 ? () => onQuantityChanged!(quantity! - 1) : null,
+                                        child: Padding(padding: const EdgeInsets.all(4), child: Icon(Icons.remove, size: 14, color: quantity! > 1 ? AppColors.mainTextColor : Colors.grey)),
+                                      ),
+                                      Text('$quantity', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                      InkWell(
+                                        onTap: () => onQuantityChanged!(quantity! + 1),
+                                        child: const Padding(padding: EdgeInsets.all(4), child: Icon(Icons.add, size: 14, color: AppColors.primaryColor)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: isSelectedTBD ? Colors.orange.withValues(alpha: 0.1) : AppColors.primaryColor.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  isSelectedTBD 
+                                      ? selectedTBDLabel 
+                                      : ((selectedValue!['base_price'] as num).toInt() == 0 ? 'Gratis' : '+ ${_formatCurrency((selectedValue!['base_price'] as num).toInt())}'),
+                                  style: TextStyle(
+                                    color: isSelectedTBD ? Colors.orange.shade800 : AppColors.primaryColor, 
+                                    fontSize: 11, 
+                                    fontWeight: FontWeight.w900
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Icon(Icons.error_outline, size: 16, color: Colors.orange.shade400),
+                            const SizedBox(width: 6),
+                            Text('Belum dipilih', style: TextStyle(color: Colors.orange.shade600, fontSize: 12, fontWeight: FontWeight.bold)),
+                          ],
                         ),
                       ]
                     ],
                   ),
                 ),
-                if (selectedValue != null && quantity != null && onQuantityChanged != null)
-                  Container(
-                    margin: const EdgeInsets.only(left: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white, 
-                      borderRadius: BorderRadius.circular(12), 
-                      border: Border.all(color: Colors.grey.shade200),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2))
-                      ]
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        InkWell(
-                          onTap: quantity! > 1 ? () => onQuantityChanged!(quantity! - 1) : null,
-                          child: Padding(padding: const EdgeInsets.all(8), child: Icon(Icons.remove, size: 16, color: quantity! > 1 ? AppColors.mainTextColor : Colors.grey)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Text('$quantity', style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold, fontSize: 16)),
-                        ),
-                        InkWell(
-                          onTap: () => onQuantityChanged!(quantity! + 1),
-                          child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.add, size: 16, color: AppColors.primaryColor)),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Icon(Icons.chevron_right_rounded, color: selectedValue != null ? AppColors.primaryColor : AppColors.secondaryTextColor, size: 24),
+                const SizedBox(width: 8),
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 20),
+                ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 28),
-      ],
+      ),
     );
   }
 }
