@@ -605,7 +605,31 @@ class DetailPesananScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  if (!hasFinalPrice) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline_rounded, color: Colors.orange.shade700, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Estimasi awal belum termasuk harga spesifikasi yang memerlukan penyesuaian fitur dan dimensi (contoh: Aplikasi, Baterai, Enclosure). Harga final akan diinformasikan oleh admin.',
+                              style: TextStyle(color: Colors.orange.shade900, fontSize: 11, fontWeight: FontWeight.w500, height: 1.4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
