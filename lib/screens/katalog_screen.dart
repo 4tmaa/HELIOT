@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../utils/app_colors.dart';
 import '../widgets/catalog/featured_component_card.dart';
@@ -116,8 +117,10 @@ class _KatalogScreenState extends State<KatalogScreen> {
   Widget build(BuildContext context) {
     final filteredList = _getFilteredList();
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,6 +229,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
                   ),
           ),
         ],
+      ),
       ),
       ),
     );
