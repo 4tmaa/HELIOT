@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:heliot/utils/app_colors.dart';
 import 'package:heliot/services/cart_service.dart';
-import 'diagonal_banner_painter.dart';
 import '../custom_toast.dart';
 
 class FeaturedComponentCard extends StatelessWidget {
@@ -32,11 +31,30 @@ class FeaturedComponentCard extends StatelessWidget {
         child: Stack(
           children: [
             Positioned(
-              left: 0,
-              top: 0,
-              child: CustomPaint(
-                size: const Size(90, 90),
-                painter: DiagonalBannerPainter(),
+              left: -28,
+              top: 20,
+              child: Transform.rotate(
+                angle: -0.785398, // -45 degrees in radians
+                child: Container(
+                  width: 120,
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryColor,
+                    boxShadow: [
+                      BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'UNGGULAN',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+                ),
               ),
             ),
             Padding(
