@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:heliot/utils/app_colors.dart';
 
 class ProjectIdentityForm extends StatelessWidget {
@@ -16,33 +16,74 @@ class ProjectIdentityForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Identitas Proyek', style: TextStyle(color: AppColors.mainTextColor, fontSize: 16, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: titleController,
-          style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold),
-          decoration: InputDecoration(
-            labelText: 'Nama Proyek',
-            labelStyle: const TextStyle(color: AppColors.secondaryTextColor),
-            filled: true,
-            fillColor: AppColors.surfaceColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            prefixIcon: const Icon(Icons.rocket_launch, color: AppColors.primaryColor),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.edit_note_rounded, color: AppColors.primaryColor, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text('Identitas Proyek', style: TextStyle(color: AppColors.mainTextColor, fontSize: 17, fontWeight: FontWeight.w900)),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              )
+            ]
+          ),
+          child: TextFormField(
+            controller: titleController,
+            style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.w700),
+            decoration: InputDecoration(
+              labelText: 'Nama Proyek',
+              labelStyle: const TextStyle(color: AppColors.secondaryTextColor),
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.grey.shade200)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: AppColors.primaryColor, width: 2)),
+              prefixIcon: const Icon(Icons.rocket_launch, color: AppColors.primaryColor),
+            ),
           ),
         ),
         const SizedBox(height: 16),
-        TextFormField(
-          controller: descriptionController,
-          maxLines: 4,
-          style: const TextStyle(color: AppColors.mainTextColor),
-          decoration: InputDecoration(
-            labelText: 'Deskripsi Cara Kerja',
-            labelStyle: const TextStyle(color: AppColors.secondaryTextColor),
-            alignLabelWithHint: true,
-            filled: true,
-            fillColor: AppColors.surfaceColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            prefixIcon: const Padding(padding: EdgeInsets.only(bottom: 60), child: Icon(Icons.description, color: AppColors.primaryColor)),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              )
+            ]
+          ),
+          child: TextFormField(
+            controller: descriptionController,
+            maxLines: 4,
+            style: const TextStyle(color: AppColors.mainTextColor, height: 1.5),
+            decoration: InputDecoration(
+              labelText: 'Deskripsi Cara Kerja',
+              labelStyle: const TextStyle(color: AppColors.secondaryTextColor),
+              alignLabelWithHint: true,
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.grey.shade200)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: AppColors.primaryColor, width: 2)),
+              prefixIcon: const Padding(padding: EdgeInsets.only(bottom: 72), child: Icon(Icons.description, color: AppColors.primaryColor)),
+            ),
           ),
         ),
       ],

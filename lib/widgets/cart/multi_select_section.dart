@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:heliot/utils/app_colors.dart';
 import 'package:heliot/services/cart_service.dart';
@@ -53,7 +53,7 @@ class MultiSelectSection extends StatelessWidget {
               ),
               Expanded(
                 child: sourceList.isEmpty
-                    ? const Center(child: Text('Data tidak tersedia', style: const TextStyle(color: AppColors.secondaryTextColor)))
+                    ? const Center(child: Text('Data tidak tersedia', style: TextStyle(color: AppColors.secondaryTextColor)))
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: sourceList.length,
@@ -89,7 +89,7 @@ class MultiSelectSection extends StatelessWidget {
                                           const SizedBox(height: 4),
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                            decoration: BoxDecoration(color: Colors.orange.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                                            decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                                             child: Text('Tingkat Kesulitan: $diff', style: TextStyle(color: Colors.orange.shade700, fontSize: 10, fontWeight: FontWeight.bold)),
                                           )
                                         ]
@@ -134,51 +134,90 @@ class MultiSelectSection extends StatelessWidget {
               final qty = sel['qty'];
               final price = (item['base_price'] as num?)?.toInt() ?? 0;
 
-              return Container(
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 8, offset: const Offset(0, 4))],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.primaryColor.withValues(alpha: 0.3), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryColor.withValues(alpha: 0.08), 
+                      blurRadius: 12, 
+                      offset: const Offset(0, 6)
+                    )
+                  ],
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: Icon(icon, color: AppColors.primaryColor, size: 20),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [AppColors.primaryColor, AppColors.primaryColor.withValues(alpha: 0.8)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryColor.withValues(alpha: 0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          )
+                        ],
+                      ),
+                      child: Icon(icon, color: Colors.white, size: 22),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(item['name'], style: const TextStyle(color: AppColors.mainTextColor, fontSize: 14, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
-                          Text(
-                            price == 0 ? 'Gratis' : _formatCurrency(price),
-                            style: const TextStyle(color: AppColors.primaryColor, fontSize: 12, fontWeight: FontWeight.bold),
+                          Text(item['name'], style: const TextStyle(color: AppColors.mainTextColor, fontSize: 15, fontWeight: FontWeight.w800)),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: price == 0 ? Colors.green.withValues(alpha: 0.1) : AppColors.primaryColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              price == 0 ? 'Gratis' : _formatCurrency(price),
+                              style: TextStyle(
+                                color: price == 0 ? Colors.green.shade700 : AppColors.primaryColor, 
+                                fontSize: 12, 
+                                fontWeight: FontWeight.w900
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      decoration: BoxDecoration(color: AppColors.backgroundColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade300)),
+                      decoration: BoxDecoration(
+                        color: Colors.white, 
+                        borderRadius: BorderRadius.circular(12), 
+                        border: Border.all(color: Colors.grey.shade200),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 4, offset: const Offset(0, 2))
+                        ]
+                      ),
                       child: Row(
                         children: [
                           InkWell(
                             onTap: () => CartService.instance.updateQty(item, -1, isMCU),
-                            child: const Padding(padding: EdgeInsets.all(6), child: Icon(Icons.remove, size: 16, color: AppColors.mainTextColor)),
+                            child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.remove, size: 16, color: AppColors.mainTextColor)),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text('$qty', style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold, fontSize: 14)),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Text('$qty', style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold, fontSize: 15)),
                           ),
                           InkWell(
                             onTap: () => CartService.instance.updateQty(item, 1, isMCU),
-                            child: const Padding(padding: EdgeInsets.all(6), child: Icon(Icons.add, size: 16, color: AppColors.mainTextColor)),
+                            child: const Padding(padding: EdgeInsets.all(8), child: Icon(Icons.add, size: 16, color: AppColors.primaryColor)),
                           ),
                         ],
                       ),
@@ -194,7 +233,7 @@ class MultiSelectSection extends StatelessWidget {
           child: OutlinedButton.icon(
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.primaryColor,
-              side: BorderSide(color: AppColors.primaryColor.withOpacity(0.5)),
+              side: BorderSide(color: AppColors.primaryColor.withValues(alpha: 0.5)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: isLoading ? null : () => _showSelectionModal(context),

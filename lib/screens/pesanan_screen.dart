@@ -17,55 +17,47 @@ class _PesananScreenState extends State<PesananScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 120.0,
-            floating: true,
-            pinned: true,
-            backgroundColor: AppColors.backgroundColor,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 24, bottom: 16),
-              title: const Text(
-                'Pesanan Saya',
-                style: TextStyle(
-                  color: AppColors.mainTextColor,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              background: Stack(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Row(
                 children: [
-                  Positioned(
-                    top: -50,
-                    right: -50,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.primaryColor.withValues(alpha: 0.1),
-                      ),
+                  const Text(
+                    'Pesanan Saya',
+                    style: TextStyle(
+                      color: AppColors.mainTextColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 28,
+                      letterSpacing: -0.5,
                     ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    width: 45,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.shopping_cart_checkout, color: AppColors.primaryColor),
                   ),
                 ],
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
+            // Segmented Control
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Container(
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -80,14 +72,14 @@ class _PesananScreenState extends State<PesananScreen> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeOutQuint,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
                             color: _selectedIndex == 0 ? AppColors.primaryColor : Colors.transparent,
                             borderRadius: BorderRadius.circular(26),
                             boxShadow: _selectedIndex == 0 ? [
                               BoxShadow(
                                 color: AppColors.primaryColor.withValues(alpha: 0.3),
-                                blurRadius: 8,
+                                blurRadius: 10,
                                 offset: const Offset(0, 4),
                               )
                             ] : [],
@@ -111,14 +103,14 @@ class _PesananScreenState extends State<PesananScreen> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeOutQuint,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
                             color: _selectedIndex == 1 ? AppColors.primaryColor : Colors.transparent,
                             borderRadius: BorderRadius.circular(26),
                             boxShadow: _selectedIndex == 1 ? [
                               BoxShadow(
                                 color: AppColors.primaryColor.withValues(alpha: 0.3),
-                                blurRadius: 8,
+                                blurRadius: 10,
                                 offset: const Offset(0, 4),
                               )
                             ] : [],
@@ -139,33 +131,34 @@ class _PesananScreenState extends State<PesananScreen> {
                 ),
               ),
             ),
-          ),
-          SliverFillRemaining(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 400),
-              switchInCurve: Curves.easeOutQuint,
-              switchOutCurve: Curves.easeInQuint,
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.05, 0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                );
-              },
-              child: _selectedIndex == 0 
-                  ? BuatProyekTab(
-                      key: const ValueKey('buat_proyek'),
-                      onProjectSubmitted: () => setState(() => _selectedIndex = 1)
-                    ) 
-                  : const RiwayatPesananTab(key: ValueKey('riwayat')),
+            const SizedBox(height: 8),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                switchInCurve: Curves.easeOutQuint,
+                switchOutCurve: Curves.easeInQuint,
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0.05, 0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _selectedIndex == 0 
+                    ? BuatProyekTab(
+                        key: const ValueKey('buat_proyek'),
+                        onProjectSubmitted: () => setState(() => _selectedIndex = 1)
+                      ) 
+                    : const RiwayatPesananTab(key: ValueKey('riwayat')),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
