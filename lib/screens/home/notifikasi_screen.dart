@@ -40,8 +40,11 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
         });
       }
 
-      final unreadIds = response.where((n) => n['is_read'] == false).map((n) => n['id']).toList();
-      
+      final unreadIds = response
+          .where((n) => n['is_read'] == false)
+          .map((n) => n['id'])
+          .toList();
+
       if (unreadIds.isNotEmpty) {
         await supabaseClient
             .from('notifications')
@@ -81,14 +84,17 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
   Map<String, dynamic> _getNotificationStyle(String type) {
     switch (type.toLowerCase()) {
       case 'pesanan':
-        return {'icon': Icons.shopping_bag_outlined, 'color': Colors.blue};
+        return {'icon': Icons.local_shipping_rounded, 'color': Colors.blueAccent};
       case 'promo':
       case 'templat':
-        return {'icon': Icons.campaign_outlined, 'color': Colors.orange};
+        return {'icon': Icons.campaign_rounded, 'color': Colors.orangeAccent.shade700};
       case 'peringatan':
-        return {'icon': Icons.warning_amber_rounded, 'color': Colors.red};
+        return {'icon': Icons.error_rounded, 'color': Colors.redAccent};
       default:
-        return {'icon': Icons.info_outline_rounded, 'color': AppColors.primaryColor};
+        return {
+          'icon': Icons.notifications_active_rounded,
+          'color': AppColors.primaryColor,
+        };
     }
   }
 
@@ -107,15 +113,25 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
               backgroundColor: Colors.white,
               elevation: 0,
               scrolledUnderElevation: 0,
-              iconTheme: const IconThemeData(color: AppColors.primaryColor),
+              iconTheme: const IconThemeData(color: AppColors.mainTextColor),
               centerTitle: true,
-              title: const Text('Notifikasi', style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold, fontSize: 18)),
+              title: const Text(
+                'Notifikasi',
+                style: TextStyle(
+                  color: AppColors.mainTextColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
             ),
             if (_isLoading)
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) => const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
                     child: CustomShimmerCard(height: 100, borderRadius: 16),
                   ),
                   childCount: 6,
@@ -127,86 +143,140 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.notifications_off_outlined, size: 80, color: Colors.grey.shade300),
+                      Icon(
+                        Icons.notifications_off_outlined,
+                        size: 80,
+                        color: Colors.grey.shade300,
+                      ),
                       const SizedBox(height: 16),
-                      Text('Belum Ada Notifikasi', style: TextStyle(color: Colors.grey.shade800, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Belum Ada Notifikasi',
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Pemberitahuan terkait pesanan akan muncul di sini.', style: TextStyle(color: Colors.grey.shade600)),
+                      Text(
+                        'Pemberitahuan terkait pesanan akan muncul di sini.',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
                     ],
                   ),
                 ),
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final notif = _notifications[index];
-                      final style = _getNotificationStyle(notif['type'] ?? 'info');
-                      final bool isRead = notif['is_read'] ?? false;
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final notif = _notifications[index];
+                    final style = _getNotificationStyle(
+                      notif['type'] ?? 'info',
+                    );
+                    final bool isRead = notif['is_read'] ?? false;
 
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: isRead ? Colors.white : style['color'].withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: isRead ? Colors.grey.shade300 : style['color'].withValues(alpha: 0.3), width: 1.5),
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: isRead
+                            ? Colors.white
+                            : style['color'].withValues(alpha: 0.03),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isRead
+                              ? Colors.grey.shade100
+                              : style['color'].withValues(alpha: 0.2),
+                          width: 1.5,
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: style['color'].withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(style['icon'], color: style['color'], size: 24),
+                        boxShadow: isRead 
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.02),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 4),
+                                )
+                              ] 
+                            : [],
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: style['color'].withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          notif['title'] ?? 'Pemberitahuan',
-                                          style: TextStyle(color: Colors.grey.shade800, fontSize: 15, fontWeight: isRead ? FontWeight.bold : FontWeight.w900),
+                            child: Icon(
+                              style['icon'],
+                              color: style['color'],
+                              size: 26,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        notif['title'] ?? 'Pemberitahuan',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade800,
+                                          fontSize: 15,
+                                          fontWeight: isRead
+                                              ? FontWeight.bold
+                                              : FontWeight.w900,
                                         ),
                                       ),
-                                      if (!isRead)
-                                        Container(
-                                          margin: const EdgeInsets.only(left: 8),
-                                          width: 8,
-                                          height: 8,
-                                          decoration: BoxDecoration(color: style['color'], shape: BoxShape.circle),
+                                    ),
+                                    if (!isRead)
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 8),
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: style['color'],
+                                          shape: BoxShape.circle,
                                         ),
-                                    ],
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  notif['message'] ?? '',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 13,
+                                    height: 1.4,
                                   ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    notif['message'] ?? '',
-                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13, height: 1.4),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  _formatTime(notif['created_at']),
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    _formatTime(notif['created_at']),
-                                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11, fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                    childCount: _notifications.length,
-                  ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }, childCount: _notifications.length),
                 ),
               ),
           ],
