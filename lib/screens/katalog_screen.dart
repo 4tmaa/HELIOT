@@ -38,26 +38,47 @@ class _KatalogScreenState extends State<KatalogScreen> {
 
   Future<void> fetchComponentData() async {
     try {
-      final cached = await LocalDatabaseService.instance.getCachedData('components');
-      if (cached != null && mounted) {
-        setState(() {
-          componentList = List<dynamic>.from(cached);
-          isLoading = false;
-        });
-        return;
-      }
+      final cached = await LocalDatabaseService.instance.getCachedData('components', maxAge: null);
 
-      final responseData = await Supabase.instance.client
-          .from('components')
-          .select()
-          .order('name');
-          
-      await LocalDatabaseService.instance.saveToCache('components', responseData);
-      if (mounted) {
-        setState(() {
-          componentList = responseData;
-          isLoading = false;
-        });
+      if (cached != null) {
+        if (mounted) {
+          setState(() {
+            componentList = List<dynamic>.from(cached).where((e) => e['is_deleted'] != true).toList();
+            isLoading = false;
+          });
+        }
+        
+        final lastSync = LocalDatabaseService.instance.getMaxUpdatedAt(List<dynamic>.from(cached));
+        final delta = await Supabase.instance.client
+            .from('components')
+            .select()
+            .gt('updated_at', lastSync);
+        
+        if (delta.isNotEmpty) {
+          final merged = LocalDatabaseService.instance.mergeData(List<dynamic>.from(cached), delta);
+          await LocalDatabaseService.instance.saveToCache('components', merged);
+          if (mounted) {
+            setState(() {
+              final activeComponents = merged.where((e) => e['is_deleted'] != true).toList();
+              // Sort by name
+              activeComponents.sort((a, b) => (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString()));
+              componentList = activeComponents;
+            });
+          }
+        }
+      } else {
+        final responseData = await Supabase.instance.client
+            .from('components')
+            .select()
+            .order('name');
+            
+        await LocalDatabaseService.instance.saveToCache('components', responseData);
+        if (mounted) {
+          setState(() {
+            componentList = responseData.where((e) => e['is_deleted'] != true).toList();
+            isLoading = false;
+          });
+        }
       }
     } catch (error) {
       if (mounted) {

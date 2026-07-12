@@ -36,7 +36,7 @@ CREATE TABLE api_cache (
 ''');
   }
 
-  Future<dynamic> getCachedData(String key, {Duration maxAge = const Duration(hours: 12)}) async {
+  Future<dynamic> getCachedData(String key, {Duration? maxAge}) async {
     try {
       final db = await instance.database;
       final maps = await db.query(
@@ -47,6 +47,9 @@ CREATE TABLE api_cache (
       );
 
       if (maps.isNotEmpty) {
+        if (maxAge == null) {
+          return jsonDecode(maps.first['data'] as String);
+        }
         final int updatedAt = maps.first['updated_at'] as int;
         final currentTime = DateTime.now().millisecondsSinceEpoch;
         
@@ -58,6 +61,40 @@ CREATE TABLE api_cache (
       // Return null on failure
     }
     return null;
+  }
+
+  String getMaxUpdatedAt(List<dynamic> data, {String timeKey = 'updated_at', String fallbackKey = 'created_at'}) {
+    if (data.isEmpty) return DateTime(2000).toIso8601String();
+    
+    DateTime maxTime = DateTime(2000);
+    for (var item in data) {
+      final timeStr = item[timeKey] ?? item[fallbackKey];
+      if (timeStr != null) {
+        final time = DateTime.tryParse(timeStr.toString());
+        if (time != null && time.isAfter(maxTime)) {
+          maxTime = time;
+        }
+      }
+    }
+    return maxTime.toIso8601String();
+  }
+
+  List<dynamic> mergeData(List<dynamic> oldData, List<dynamic> newData, {String primaryKey = 'id'}) {
+    final Map<String, dynamic> mergedMap = {};
+    
+    for (var item in oldData) {
+      if (item[primaryKey] != null) {
+        mergedMap[item[primaryKey].toString()] = item;
+      }
+    }
+    
+    for (var item in newData) {
+      if (item[primaryKey] != null) {
+        mergedMap[item[primaryKey].toString()] = item;
+      }
+    }
+    
+    return mergedMap.values.toList();
   }
 
   Future<void> saveToCache(String key, dynamic data) async {
