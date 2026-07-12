@@ -59,7 +59,11 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
   String _formatCurrency(dynamic amount) {
     if (amount == null || amount == 0) return 'Menunggu Estimasi';
     try {
-      final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+      final formatter = NumberFormat.currency(
+        locale: 'id_ID',
+        symbol: 'Rp ',
+        decimalDigits: 0,
+      );
       return formatter.format(amount);
     } catch (e) {
       return amount.toString();
@@ -68,12 +72,17 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'menunggu konfirmasi': return Colors.orangeAccent.shade700;
+      case 'menunggu konfirmasi':
+        return Colors.orangeAccent.shade700;
       case 'dirakit':
-      case 'proses': return Colors.blueAccent;
-      case 'selesai': return Colors.green;
-      case 'dibatalkan': return Colors.redAccent;
-      default: return AppColors.primaryColor;
+      case 'proses':
+        return Colors.blueAccent;
+      case 'selesai':
+        return Colors.green;
+      case 'dibatalkan':
+        return Colors.redAccent;
+      default:
+        return AppColors.primaryColor;
     }
   }
 
@@ -109,9 +118,19 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
           children: [
             Icon(Icons.inbox_outlined, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 16),
-            Text('Belum Ada Riwayat', style: TextStyle(color: Colors.grey.shade800, fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Belum Ada Riwayat',
+              style: TextStyle(
+                color: Colors.grey.shade800,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text('Proyek yang Anda ajukan akan muncul di sini.', style: TextStyle(color: Colors.grey.shade600)),
+            Text(
+              'Proyek yang Anda ajukan akan muncul di sini.',
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
           ],
         ),
       );
@@ -121,19 +140,23 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
       color: AppColors.primaryColor,
       onRefresh: _fetchOrderHistory,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+        padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8.0, bottom: 100.0),
         itemCount: _orderHistory.length,
         itemBuilder: (context, index) {
           final order = _orderHistory[index];
           final statusColor = _getStatusColor(order['status'] ?? '');
           final String mcuDisplay = _formatComponentList(order['mcu_list']);
-          final String sensorDisplay = _formatComponentList(order['sensor_list']);
+          final String sensorDisplay = _formatComponentList(
+            order['sensor_list'],
+          );
 
           return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DetailPesananScreen(orderData: order)),
+                MaterialPageRoute(
+                  builder: (context) => DetailPesananScreen(orderData: order),
+                ),
               ).then((_) => _fetchOrderHistory());
             },
             child: Container(
@@ -155,20 +178,33 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
                         Expanded(
                           child: Text(
                             order['project_title'] ?? 'Proyek Tanpa Nama',
-                            style: TextStyle(color: Colors.grey.shade800, fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: statusColor.withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Text(
                             order['status'] ?? 'Menunggu',
-                            style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: statusColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -176,38 +212,76 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(Icons.memory, size: 14, color: Colors.grey.shade600),
+                        Icon(
+                          Icons.memory,
+                          size: 14,
+                          color: Colors.grey.shade600,
+                        ),
                         const SizedBox(width: 6),
-                        Expanded(child: Text(mcuDisplay, style: TextStyle(color: Colors.grey.shade600, fontSize: 12), overflow: TextOverflow.ellipsis)),
+                        Expanded(
+                          child: Text(
+                            mcuDisplay,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.sensors, size: 14, color: Colors.grey.shade600),
+                        Icon(
+                          Icons.sensors,
+                          size: 14,
+                          color: Colors.grey.shade600,
+                        ),
                         const SizedBox(width: 6),
-                        Expanded(child: Text(sensorDisplay, style: TextStyle(color: Colors.grey.shade600, fontSize: 12), overflow: TextOverflow.ellipsis)),
+                        Expanded(
+                          child: Text(
+                            sensorDisplay,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Divider(color: Colors.grey.shade200, height: 1, thickness: 1.5),
+                      child: Divider(
+                        color: Colors.grey.shade200,
+                        height: 1,
+                        thickness: 1.5,
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           _formatDate(order['created_at']),
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 12,
+                          ),
                         ),
                         Text(
-                          order['final_price'] != null && order['final_price'] > 0 
-                              ? _formatCurrency(order['final_price']) 
+                          order['final_price'] != null &&
+                                  order['final_price'] > 0
+                              ? _formatCurrency(order['final_price'])
                               : _formatCurrency(order['estimated_price']),
                           style: TextStyle(
-                            color: order['final_price'] != null && order['final_price'] > 0 ? AppColors.primaryColor : Colors.grey.shade800, 
-                            fontSize: 14, 
-                            fontWeight: FontWeight.bold
+                            color:
+                                order['final_price'] != null &&
+                                    order['final_price'] > 0
+                                ? AppColors.primaryColor
+                                : Colors.grey.shade800,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
