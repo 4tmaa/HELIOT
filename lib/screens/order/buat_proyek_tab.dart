@@ -25,6 +25,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  
+  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _userEmailController = TextEditingController();
+  final TextEditingController _userPhoneController = TextEditingController();
 
   Map<String, dynamic>? _selectedConnectivity;
   Map<String, dynamic>? _selectedEnclosure;
@@ -57,8 +61,32 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     _fetchAllOptions();
+    _fetchUserProfile();
     CartService.instance.selectedMCUs.addListener(_onCartChanged);
     CartService.instance.selectedSensors.addListener(_onCartChanged);
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final activeUser = supabaseClient.auth.currentUser;
+    if (activeUser != null) {
+      _userEmailController.text = activeUser.email ?? '';
+      try {
+        final profileData = await supabaseClient
+            .from('profiles')
+            .select()
+            .eq('id', activeUser.id)
+            .maybeSingle();
+        
+        if (mounted && profileData != null) {
+          setState(() {
+            _userNameController.text = profileData['full_name'] ?? '';
+            _userPhoneController.text = profileData['phone_number'] ?? '';
+          });
+        }
+      } catch (e) {
+        debugPrint('Gagal memuat profil: $e');
+      }
+    }
   }
 
   @override
@@ -67,6 +95,9 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     CartService.instance.selectedSensors.removeListener(_onCartChanged);
     _titleController.dispose();
     _descriptionController.dispose();
+    _userNameController.dispose();
+    _userEmailController.dispose();
+    _userPhoneController.dispose();
     super.dispose();
   }
 
@@ -486,8 +517,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
         return;
       }
     } else if (_currentStep == 2) {
-      if (_titleController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty) {
-        CustomToast.show(context, message: 'Nama dan Deskripsi Proyek wajib diisi.', type: ToastType.warning);
+      if (_titleController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty ||
+          _userNameController.text.trim().isEmpty || _userEmailController.text.trim().isEmpty ||
+          _userPhoneController.text.trim().isEmpty) {
+        CustomToast.show(context, message: 'Semua kolom identitas wajib diisi.', type: ToastType.warning);
         return;
       }
     } else if (_currentStep == 3) {
@@ -622,6 +655,9 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
             ProjectIdentityForm(
               titleController: _titleController,
               descriptionController: _descriptionController,
+              userNameController: _userNameController,
+              userEmailController: _userEmailController,
+              userPhoneController: _userPhoneController,
             ),
           ],
 
