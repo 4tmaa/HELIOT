@@ -5,6 +5,7 @@ import 'profile/edit_profil_screen.dart';
 import 'profile/alamat_pengiriman_screen.dart';
 import 'profile/hubungi_admin_screen.dart';
 import 'profile/pusat_bantuan_screen.dart';
+import '../widgets/custom_loading.dart';
 
 class _AppColors {
   static const Color primaryColor = Color(0xFFE63946);
@@ -38,7 +39,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
   Future<void> fetchUserData() async {
     try {
       final activeUser = Supabase.instance.client.auth.currentUser;
-      
+
       if (activeUser != null) {
         final profileData = await Supabase.instance.client
             .from('profiles')
@@ -96,12 +97,12 @@ class _ProfilScreenState extends State<ProfilScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: isLoading
-          ? const Center(child: CircularProgressIndicator(color: _AppColors.primaryColor))
+          ? _buildShimmerLoading()
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
-                  padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+                  padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
                   child: Text(
                     'Profil Saya',
                     style: TextStyle(
@@ -117,32 +118,35 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     children: [
                       _buildProfileCard(),
-                  const SizedBox(height: 24),
-                  _buildSectionHeader('Akun Anda'),
-                  _buildMenuTile(
-                    icon: Icons.location_on_rounded,
-                    title: 'Alamat Pengiriman',
-                    onTapAction: () => navigateToPage(const AlamatPengirimanScreen()),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildSectionHeader('Informasi & Bantuan'),
-                  _buildMenuTile(
-                    icon: Icons.support_agent_rounded,
-                    title: 'Hubungi Admin',
-                    onTapAction: () => navigateToPage(const HubungiAdminScreen()),
-                  ),
-                  _buildMenuTile(
-                    icon: Icons.help_rounded,
-                    title: 'Pusat Bantuan',
-                    onTapAction: () => navigateToPage(const PusatBantuanScreen()),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuTile(
-                    icon: Icons.logout_rounded,
-                    title: 'Keluar',
-                    isDestructive: true,
-                    onTapAction: processLogout,
-                  ),
+                      const SizedBox(height: 24),
+                      _buildSectionHeader('Akun Anda'),
+                      _buildMenuTile(
+                        icon: Icons.location_on_rounded,
+                        title: 'Alamat Pengiriman',
+                        onTapAction: () =>
+                            navigateToPage(const AlamatPengirimanScreen()),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSectionHeader('Informasi & Bantuan'),
+                      _buildMenuTile(
+                        icon: Icons.support_agent_rounded,
+                        title: 'Hubungi Admin',
+                        onTapAction: () =>
+                            navigateToPage(const HubungiAdminScreen()),
+                      ),
+                      _buildMenuTile(
+                        icon: Icons.help_rounded,
+                        title: 'Pusat Bantuan',
+                        onTapAction: () =>
+                            navigateToPage(const PusatBantuanScreen()),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildMenuTile(
+                        icon: Icons.logout_rounded,
+                        title: 'Keluar',
+                        isDestructive: true,
+                        onTapAction: processLogout,
+                      ),
                     ],
                   ),
                 ),
@@ -151,15 +155,47 @@ class _ProfilScreenState extends State<ProfilScreen> {
     );
   }
 
+  Widget _buildShimmerLoading() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, 10),
+          child: CustomShimmerBox(height: 32, width: 150),
+        ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            children: const [
+              CustomShimmerBox(height: 180, borderRadius: 24),
+              SizedBox(height: 24),
+              Padding(
+                padding: EdgeInsets.only(left: 4, bottom: 8),
+                child: CustomShimmerBox(height: 14, width: 100),
+              ),
+              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
+              SizedBox(height: 16),
+              Padding(
+                padding: EdgeInsets.only(left: 4, bottom: 8),
+                child: CustomShimmerBox(height: 14, width: 140),
+              ),
+              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
+              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
+              SizedBox(height: 16),
+              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildProfileCard() {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFFE63946),
-            Color(0xFFB02A36),
-          ],
+          colors: [Color(0xFFE63946), Color(0xFFB02A36)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -208,7 +244,11 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   const CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.person_rounded, size: 40, color: _AppColors.primaryColor),
+                    child: Icon(
+                      Icons.person_rounded,
+                      size: 40,
+                      color: _AppColors.primaryColor,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -222,23 +262,35 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   const SizedBox(height: 4),
                   Text(
                     userEmail,
-                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     height: 45,
                     child: ElevatedButton.icon(
-                      onPressed: () => navigateToPage(EditProfilScreen(
-                        initialName: userName,
-                        initialPhone: userPhone,
-                        initialEmail: userEmail,
-                        initialAddress: userAddress,
-                      )),
-                      icon: const Icon(Icons.edit_rounded, size: 18, color: _AppColors.primaryColor),
+                      onPressed: () => navigateToPage(
+                        EditProfilScreen(
+                          initialName: userName,
+                          initialPhone: userPhone,
+                          initialEmail: userEmail,
+                          initialAddress: userAddress,
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.edit_rounded,
+                        size: 18,
+                        color: _AppColors.primaryColor,
+                      ),
                       label: const Text(
                         'Edit Profil',
-                        style: TextStyle(color: _AppColors.primaryColor, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: _AppColors.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -279,8 +331,12 @@ class _ProfilScreenState extends State<ProfilScreen> {
     required VoidCallback onTapAction,
     bool isDestructive = false,
   }) {
-    final Color iconColor = isDestructive ? _AppColors.destructiveColor : _AppColors.primaryColor;
-    final Color textColor = isDestructive ? _AppColors.destructiveColor : _AppColors.mainTextColor;
+    final Color iconColor = isDestructive
+        ? _AppColors.destructiveColor
+        : _AppColors.primaryColor;
+    final Color textColor = isDestructive
+        ? _AppColors.destructiveColor
+        : _AppColors.mainTextColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -303,7 +359,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
           title,
           style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
         ),
-        trailing: const Icon(Icons.chevron_right_rounded, color: _AppColors.secondaryTextColor),
+        trailing: const Icon(
+          Icons.chevron_right_rounded,
+          color: _AppColors.secondaryTextColor,
+        ),
         onTap: onTapAction,
       ),
     );
