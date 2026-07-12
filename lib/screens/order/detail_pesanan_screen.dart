@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../utils/app_colors.dart';
 
 class DetailPesananScreen extends StatelessWidget {
@@ -132,6 +133,74 @@ class DetailPesananScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showPaymentModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+              const SizedBox(height: 24),
+              const Icon(Icons.account_balance_wallet_rounded, size: 60, color: AppColors.primaryColor),
+              const SizedBox(height: 16),
+              const Text('Konfirmasi Pembayaran', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.mainTextColor)),
+              const SizedBox(height: 8),
+              Text(
+                'Total tagihan Anda adalah ${_formatCurrency(orderData['final_price'])}.\nSelesaikan pembayaran agar proyek dapat diproses.', 
+                textAlign: TextAlign.center, 
+                style: TextStyle(color: Colors.grey.shade600, height: 1.5)
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await Supabase.instance.client
+                          .from('orders')
+                          .update({'status': 'Proses'})
+                          .eq('id', orderData['id']);
+                      if (context.mounted) {
+                        Navigator.pop(context); // close modal
+                        Navigator.pop(context); // go back to riwayat pesanan
+                      }
+                    } catch (e) {
+                      debugPrint('Error updating status: $e');
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Bayar Sekarang', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Batal', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).padding.bottom),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -335,36 +404,48 @@ class DetailPesananScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: hasFinalPrice ? AppColors.primaryColor : Colors.white,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: hasFinalPrice
-                    ? null
-                    : Border.all(color: Colors.grey.shade300, width: 1.5),
+                border: Border.all(color: Colors.grey.shade300, width: 1.5),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _buildSectionHeader('Rincian Biaya', Icons.receipt_long_rounded),
+                  Divider(color: Colors.grey.shade200, thickness: 1.5),
+                  const SizedBox(height: 12),
+                  
+                  _buildDataRow(
+                    'Total Komponen',
+                    _formatCurrency((orderData['estimated_price'] ?? 0) - (orderData['service_fee'] ?? 0))
+                  ),
+                  _buildDataRow(
+                    'Jasa Perakitan',
+                    _formatCurrency(orderData['service_fee'])
+                  ),
+                  
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(color: Color(0xFFEEEEEE), thickness: 1.5, height: 1),
+                  ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Estimasi Awal',
                         style: TextStyle(
-                          color: hasFinalPrice
-                              ? Colors.white70
-                              : Colors.grey.shade600,
+                          color: Colors.grey.shade600,
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         _formatCurrency(orderData['estimated_price']),
                         style: TextStyle(
-                          color: hasFinalPrice
-                              ? Colors.white70
-                              : Colors.grey.shade800,
+                          color: Colors.grey.shade800,
                           fontSize: 14,
-                          decoration: hasFinalPrice
-                              ? TextDecoration.lineThrough
-                              : null,
+                          fontWeight: FontWeight.bold,
+                          decoration: hasFinalPrice ? TextDecoration.lineThrough : null,
                         ),
                       ),
                     ],
@@ -376,20 +457,16 @@ class DetailPesananScreen extends StatelessWidget {
                       Text(
                         'Harga Final',
                         style: TextStyle(
-                          color: hasFinalPrice
-                              ? Colors.white
-                              : Colors.grey.shade800,
+                          color: AppColors.mainTextColor,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        hasFinalPrice
-                            ? _formatCurrency(orderData['final_price'])
-                            : 'Menunggu Admin',
+                        hasFinalPrice ? _formatCurrency(orderData['final_price']) : 'Menunggu Admin',
                         style: TextStyle(
-                          color: hasFinalPrice ? Colors.white : Colors.white,
-                          fontSize: 20,
+                          color: hasFinalPrice ? AppColors.primaryColor : Colors.orange.shade700,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -398,6 +475,27 @@ class DetailPesananScreen extends StatelessWidget {
                 ],
               ),
             ),
+
+            if (hasFinalPrice && orderData['status']?.toString().toLowerCase() == 'menunggu konfirmasi') ...[
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _showPaymentModal(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
+                    shadowColor: AppColors.primaryColor.withValues(alpha: 0.4),
+                  ),
+                  child: const Text(
+                    'Lanjut ke Pembayaran',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 40),
           ],
         ),
