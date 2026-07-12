@@ -18,16 +18,14 @@ class ProjectIdentityForm extends StatelessWidget {
       children: [
         Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
+            const Text(
+              'Identitas Proyek',
+              style: TextStyle(
+                color: AppColors.mainTextColor,
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
               ),
-              child: const Icon(Icons.edit_note_rounded, color: AppColors.primaryColor, size: 20),
             ),
-            const SizedBox(width: 12),
-            const Text('Identitas Proyek', style: TextStyle(color: AppColors.mainTextColor, fontSize: 17, fontWeight: FontWeight.w900)),
           ],
         ),
         const SizedBox(height: 20),
@@ -40,20 +38,35 @@ class ProjectIdentityForm extends StatelessWidget {
                 color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
-              )
-            ]
+              ),
+            ],
           ),
           child: TextFormField(
             controller: titleController,
-            style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+              color: AppColors.mainTextColor,
+              fontWeight: FontWeight.w700,
+            ),
             decoration: InputDecoration(
               labelText: 'Nama Proyek',
               labelStyle: const TextStyle(color: AppColors.secondaryTextColor),
               filled: true,
               fillColor: Colors.white,
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.grey.shade200)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: AppColors.primaryColor, width: 2)),
-              prefixIcon: const Icon(Icons.badge_rounded, color: AppColors.primaryColor),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(
+                  color: AppColors.primaryColor,
+                  width: 2,
+                ),
+              ),
+              prefixIcon: const Icon(
+                Icons.badge_rounded,
+                color: AppColors.primaryColor,
+              ),
             ),
           ),
         ),
@@ -67,8 +80,8 @@ class ProjectIdentityForm extends StatelessWidget {
                 color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
-              )
-            ]
+              ),
+            ],
           ),
           child: TextFormField(
             controller: descriptionController,
@@ -80,9 +93,24 @@ class ProjectIdentityForm extends StatelessWidget {
               alignLabelWithHint: true,
               filled: true,
               fillColor: Colors.white,
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.grey.shade200)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: AppColors.primaryColor, width: 2)),
-              prefixIcon: const Padding(padding: EdgeInsets.only(bottom: 72), child: Icon(Icons.text_snippet_rounded, color: AppColors.primaryColor)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: const BorderSide(
+                  color: AppColors.primaryColor,
+                  width: 2,
+                ),
+              ),
+              prefixIcon: const Padding(
+                padding: EdgeInsets.only(bottom: 72),
+                child: Icon(
+                  Icons.text_snippet_rounded,
+                  color: AppColors.primaryColor,
+                ),
+              ),
             ),
           ),
         ),

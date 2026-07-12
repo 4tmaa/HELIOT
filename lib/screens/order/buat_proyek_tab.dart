@@ -43,6 +43,7 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
 
   int _baseServiceFee = 25000;
   int _difficultyMultiplier = 15000;
+  int _currentStep = 0;
 
   @override
   void initState() {
@@ -471,116 +472,39 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
   }
 
-  void _showSpesifikasiTambahanModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.85,
-              decoration: const BoxDecoration(
-                color: AppColors.backgroundColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 12),
-                    height: 5,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      'Spesifikasi Tambahan',
-                      style: TextStyle(
-                        color: AppColors.mainTextColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Column(
-                        children: [
-                          KomponenSelectionCard(
-                            title: 'Platform Output (Opsional)',
-                            subtitle: 'Medium untuk memantau data perangkat.',
-                            icon: Icons.dashboard_customize,
-                            selectedValue: _selectedOutput,
-                            items: _outputList,
-                            isLoading: _isLoadingData,
-                            onSelected: (val) {
-                              setState(() => _selectedOutput = val);
-                              setModalState(() {});
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          KomponenSelectionCard(
-                            title: 'Sumber Daya Listrik *',
-                            subtitle: 'Metode pemberian daya pada alat.',
-                            icon: Icons.battery_charging_full,
-                            selectedValue: _selectedPower,
-                            items: _powerList,
-                            isLoading: _isLoadingData,
-                            onSelected: (val) {
-                              setState(() => _selectedPower = val);
-                              setModalState(() {});
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          KomponenSelectionCard(
-                            title: 'Modul Konektivitas',
-                            subtitle: 'Jalur komunikasi pengiriman data.',
-                            icon: Icons.wifi,
-                            selectedValue: _selectedConnectivity,
-                            items: _connectivityList,
-                            isLoading: _isLoadingData,
-                            onSelected: (val) {
-                              setState(() => _selectedConnectivity = val);
-                              setModalState(() {});
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          KomponenSelectionCard(
-                            title: 'Bentuk Fisik (Enclosure)',
-                            subtitle: 'Pelindung fisik komponen sirkuit.',
-                            icon: Icons.view_in_ar,
-                            selectedValue: _selectedEnclosure,
-                            items: _enclosureList,
-                            isLoading: _isLoadingData,
-                            onSelected: (val) {
-                              setState(() => _selectedEnclosure = val);
-                              setModalState(() {});
-                            },
-                          ),
-                          const SizedBox(height: 40),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+  void _onStepContinue() {
+    if (_currentStep == 0) {
+      final currentMCUs = CartService.instance.selectedMCUs.value;
+      final currentSensors = CartService.instance.selectedSensors.value;
+      if (currentMCUs.isEmpty || currentSensors.isEmpty) {
+        CustomToast.show(context, message: 'Silakan pilih mikrokontroler dan sensor terlebih dahulu.', type: ToastType.warning);
+        return;
+      }
+    } else if (_currentStep == 1) {
+      if (_selectedPower == null || _selectedOutput == null) {
+        CustomToast.show(context, message: 'Platform Output dan Sumber Daya wajib diisi.', type: ToastType.warning);
+        return;
+      }
+    } else if (_currentStep == 2) {
+      if (_titleController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty) {
+        CustomToast.show(context, message: 'Nama dan Deskripsi Proyek wajib diisi.', type: ToastType.warning);
+        return;
+      }
+    } else if (_currentStep == 3) {
+      _submitProject();
+      return;
+    }
+    setState(() {
+      _currentStep += 1;
+    });
+  }
+
+  void _onStepCancel() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep -= 1;
+      });
+    }
   }
 
   @override
@@ -589,132 +513,183 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     final currentMCUs = CartService.instance.selectedMCUs.value;
     final currentSensors = CartService.instance.selectedSensors.value;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.primaryColor.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppColors.primaryColor.withOpacity(0.2),
-              ),
-            ),
-            child: const Row(
-              children: [
-                Icon(Icons.info_outline, color: AppColors.primaryColor),
-                SizedBox(width: 12),
+    return Stepper(
+      type: StepperType.horizontal,
+      currentStep: _currentStep,
+      onStepContinue: _onStepContinue,
+      onStepCancel: _onStepCancel,
+      onStepTapped: (step) => setState(() => _currentStep = step),
+      controlsBuilder: (BuildContext context, ControlsDetails details) {
+        return Container(
+          margin: const EdgeInsets.only(top: 32, bottom: 48),
+          child: Row(
+            children: [
+              if (_currentStep > 0)
                 Expanded(
-                  child: Text(
-                    'Biaya jasa otomatis dihitung berdasarkan tingkat kesulitan komponen yang dipilih.',
-                    style: TextStyle(
-                      color: AppColors.mainTextColor,
-                      fontSize: 13,
+                  child: OutlinedButton(
+                    onPressed: details.onStepCancel,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      side: const BorderSide(color: AppColors.primaryColor),
                     ),
+                    child: const Text('Kembali', style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold)),
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          MultiSelectSection(
-            title: 'Mikrokontroler Utama *',
-            subtitle: 'Pilih satu atau lebih otak sistem proyek.',
-            icon: Icons.memory,
-            sourceList: _mcuList,
-            selectedList: currentMCUs,
-            isMCU: true,
-            isLoading: _isLoadingData,
-          ),
-
-          MultiSelectSection(
-            title: 'Sensor & Aktuator *',
-            subtitle:
-                'Pilih sensor yang dibutuhkan. Anda bisa memilih lebih dari satu.',
-            icon: Icons.sensors,
-            sourceList: _sensorList,
-            selectedList: currentSensors,
-            isMCU: false,
-            isLoading: _isLoadingData,
-          ),
-
-          SizedBox(
-            width: double.infinity,
-            height: 55,
-            child: OutlinedButton(
-              onPressed: () => _showSpesifikasiTambahanModal(context),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primaryColor,
-                backgroundColor: AppColors.primaryColor.withValues(alpha: 0.05),
-                side: BorderSide(
-                  color: AppColors.primaryColor.withValues(alpha: 0.5),
-                  width: 1.5,
+              if (_currentStep > 0) const SizedBox(width: 16),
+              Expanded(
+                flex: 2,
+                child: ElevatedButton(
+                  onPressed: _isSubmitting || _isLoadingData ? null : details.onStepContinue,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: AppColors.primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: _isSubmitting && _currentStep == 3
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : Text(
+                          _currentStep == 3 ? 'Ajukan Pesanan' : 'Selanjutnya',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                 ),
-                shape: RoundedRectangleBorder(
+              ),
+            ],
+          ),
+        );
+      },
+      steps: [
+        Step(
+          title: const Text('Komponen', style: TextStyle(fontSize: 10)),
+          isActive: _currentStep >= 0,
+          state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.info_outline, color: AppColors.primaryColor),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Biaya jasa otomatis dihitung berdasarkan tingkat kesulitan komponen yang dipilih.',
+                        style: TextStyle(color: AppColors.mainTextColor, fontSize: 13),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: const Text(
-                'Atur Spesifikasi Tambahan',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              const SizedBox(height: 24),
+              MultiSelectSection(
+                title: 'Mikrokontroler Utama *',
+                subtitle: 'Pilih satu atau lebih otak sistem proyek.',
+                icon: Icons.memory,
+                sourceList: _mcuList,
+                selectedList: currentMCUs,
+                isMCU: true,
+                isLoading: _isLoadingData,
               ),
-            ),
+              MultiSelectSection(
+                title: 'Sensor & Aktuator *',
+                subtitle: 'Pilih sensor yang dibutuhkan. Anda bisa memilih lebih dari satu.',
+                icon: Icons.sensors,
+                sourceList: _sensorList,
+                selectedList: currentSensors,
+                isMCU: false,
+                isLoading: _isLoadingData,
+              ),
+            ],
           ),
-
-          const Divider(height: 32, color: Color(0xFFEEEEEE), thickness: 2),
-
-          ProjectIdentityForm(
+        ),
+        Step(
+          title: const Text('Spesifikasi', style: TextStyle(fontSize: 10)),
+          isActive: _currentStep >= 1,
+          state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              KomponenSelectionCard(
+                title: 'Platform Output (Opsional)',
+                subtitle: 'Medium untuk memantau data perangkat.',
+                icon: Icons.dashboard_customize,
+                selectedValue: _selectedOutput,
+                items: _outputList,
+                isLoading: _isLoadingData,
+                onSelected: (val) => setState(() => _selectedOutput = val),
+              ),
+              const SizedBox(height: 16),
+              KomponenSelectionCard(
+                title: 'Sumber Daya Listrik *',
+                subtitle: 'Metode pemberian daya pada alat.',
+                icon: Icons.battery_charging_full,
+                selectedValue: _selectedPower,
+                items: _powerList,
+                isLoading: _isLoadingData,
+                onSelected: (val) => setState(() => _selectedPower = val),
+              ),
+              const SizedBox(height: 16),
+              KomponenSelectionCard(
+                title: 'Modul Konektivitas',
+                subtitle: 'Jalur komunikasi pengiriman data.',
+                icon: Icons.wifi,
+                selectedValue: _selectedConnectivity,
+                items: _connectivityList,
+                isLoading: _isLoadingData,
+                onSelected: (val) => setState(() => _selectedConnectivity = val),
+              ),
+              const SizedBox(height: 16),
+              KomponenSelectionCard(
+                title: 'Bentuk Fisik (Enclosure)',
+                subtitle: 'Pelindung fisik komponen sirkuit.',
+                icon: Icons.view_in_ar,
+                selectedValue: _selectedEnclosure,
+                items: _enclosureList,
+                isLoading: _isLoadingData,
+                onSelected: (val) => setState(() => _selectedEnclosure = val),
+              ),
+            ],
+          ),
+        ),
+        Step(
+          title: const Text('Identitas', style: TextStyle(fontSize: 10)),
+          isActive: _currentStep >= 2,
+          state: _currentStep > 2 ? StepState.complete : StepState.indexed,
+          content: ProjectIdentityForm(
             titleController: _titleController,
             descriptionController: _descriptionController,
           ),
-
-          const SizedBox(height: 32),
-
-          if (costs['total']! > 0)
-            CostBreakdownCard(
-              componentCost: costs['componentCost']!,
-              serviceFee: costs['serviceFee']!,
-              total: costs['total']!,
-            ),
-
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 60,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                elevation: 5,
-                shadowColor: AppColors.primaryColor.withOpacity(0.4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+        ),
+        Step(
+          title: const Text('Rincian', style: TextStyle(fontSize: 10)),
+          isActive: _currentStep >= 3,
+          state: _currentStep == 3 ? StepState.indexed : StepState.complete,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (costs['total']! > 0)
+                CostBreakdownCard(
+                  componentCost: costs['componentCost']!,
+                  serviceFee: costs['serviceFee']!,
+                  total: costs['total']!,
+                )
+              else
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Text('Belum ada komponen yang dipilih.'),
+                  ),
                 ),
-              ),
-              onPressed: _isSubmitting || _isLoadingData
-                  ? null
-                  : _submitProject,
-              child: _isSubmitting
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      'Ajukan Pesanan',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-            ),
+            ],
           ),
-          SizedBox(height: 100),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
