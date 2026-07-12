@@ -527,7 +527,7 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
         'enclosure': _selectedEnclosure?['name'] ?? 'Tidak Ditentukan',
         'output_platform': _selectedOutput?['name'],
         'power_supply': _selectedPower?['name'],
-        'estimated_price': costs['componentCost'],
+        'estimated_price': costs['total'],
         'service_fee': costs['serviceFee'],
         'status': 'Menunggu Konfirmasi',
       });
