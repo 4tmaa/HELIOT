@@ -97,11 +97,26 @@ class _ProfilScreenState extends State<ProfilScreen> {
     return SafeArea(
       child: isLoading
           ? const Center(child: CircularProgressIndicator(color: _AppColors.primaryColor))
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
-                children: [
-                  _buildProfileCard(),
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+                  child: Text(
+                    'Profil Saya',
+                    style: TextStyle(
+                      color: _AppColors.mainTextColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 28,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    children: [
+                      _buildProfileCard(),
                   const SizedBox(height: 24),
                   _buildSectionHeader('Akun Anda'),
                   _buildMenuTile(
@@ -128,8 +143,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     isDestructive: true,
                     onTapAction: processLogout,
                   ),
-                ],
-              ),
+                    ],
+                  ),
+                ),
+              ],
             ),
     );
   }
@@ -191,7 +208,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   const CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.person_rounded, size: 45, color: _AppColors.primaryColor),
+                    child: Icon(Icons.person_rounded, size: 40, color: _AppColors.primaryColor),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -281,7 +298,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-        leading: Icon(icon, color: iconColor, size: 30),
+        leading: Icon(icon, color: iconColor, size: 26),
         title: Text(
           title,
           style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
