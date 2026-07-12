@@ -17,6 +17,36 @@ class DetailTemplateScreen extends StatefulWidget {
 
 class _DetailTemplateScreenState extends State<DetailTemplateScreen> {
   bool _isLoading = false;
+  bool _isFetchingComponents = true;
+  List<Map<String, dynamic>> _components = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchComponents();
+  }
+
+  Future<void> _fetchComponents() async {
+    try {
+      final data = await Supabase.instance.client
+          .from('template_components')
+          .select('qty, components(*)')
+          .eq('template_id', widget.template['id']);
+      
+      if (mounted) {
+        setState(() {
+          _components = List<Map<String, dynamic>>.from(data);
+          _isFetchingComponents = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isFetchingComponents = false;
+        });
+      }
+    }
+  }
 
   String _formatCurrency(dynamic amount) {
     if (amount == null) return 'Harga Menyusul';
@@ -24,51 +54,38 @@ class _DetailTemplateScreenState extends State<DetailTemplateScreen> {
   }
 
   Future<void> _addToCart() async {
+    if (_components.isEmpty) {
+      CustomToast.show(context, message: 'Proyek ini belum memiliki komponen terdaftar.', type: ToastType.warning);
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    try {
-      final data = await Supabase.instance.client
-          .from('template_components')
-          .select('qty, components(*)')
-          .eq('template_id', widget.template['id']);
+    await Future.delayed(const Duration(milliseconds: 300));
 
-      if (data.isEmpty) {
-        if (mounted) {
-          CustomToast.show(context, message: 'Proyek ini belum memiliki komponen terdaftar.', type: ToastType.warning);
-        }
-      } else {
-        for (var row in data) {
-          final component = row['components'] as Map<String, dynamic>;
-          final int qty = row['qty'] as int;
-          
-          for (int i = 0; i < qty; i++) {
-            CartService.instance.addComponent(component);
-          }
-        }
+    for (var row in _components) {
+      final component = row['components'] as Map<String, dynamic>;
+      final int qty = row['qty'] as int;
+      
+      for (int i = 0; i < qty; i++) {
+        CartService.instance.addComponent(component);
+      }
+    }
 
-        if (mounted) {
-          CustomToast.show(context, message: 'Berhasil memasukkan \${data.length} jenis komponen ke pesanan!', type: ToastType.success);
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainNavigation(initialIndex: 1),
-            ),
-            (route) => false,
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        CustomToast.show(context, message: 'Gagal mengambil data komponen: \$e', type: ToastType.error);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      CustomToast.show(context, message: 'Berhasil memasukkan ${_components.length} jenis komponen ke pesanan!', type: ToastType.success);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MainNavigation(initialIndex: 1),
+        ),
+        (route) => false,
+      );
     }
   }
 
@@ -162,6 +179,53 @@ class _DetailTemplateScreenState extends State<DetailTemplateScreen> {
                         style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 14, height: 1.6),
                       ),
                       const SizedBox(height: 32),
+                      const Text(
+                        'Komponen yang Didapat',
+                        style: TextStyle(color: AppColors.mainTextColor, fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_isFetchingComponents)
+                        const Center(child: CircularProgressIndicator())
+                      else if (_components.isEmpty)
+                        const Text('Tidak ada data komponen.', style: TextStyle(color: AppColors.secondaryTextColor))
+                      else
+                        ListView.separated(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _components.length,
+                          separatorBuilder: (context, index) => const Divider(height: 16),
+                          itemBuilder: (context, index) {
+                            final row = _components[index];
+                            final comp = row['components'];
+                            final qty = row['qty'];
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceColor,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: comp['photo_url'] != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                          comp['photo_url'], 
+                                          fit: BoxFit.cover, 
+                                          errorBuilder: (c,e,s) => const Icon(Icons.image, color: Colors.grey),
+                                        ),
+                                      )
+                                    : const Icon(Icons.image_outlined, color: Colors.grey),
+                              ),
+                              title: Text(comp['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              subtitle: Text(comp['category'] ?? '', style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 12)),
+                              trailing: Text('x$qty', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primaryColor)),
+                            );
+                          },
+                        ),
+                      const SizedBox(height: 32),
                     ],
                   ),
                 ),
@@ -177,6 +241,13 @@ class _DetailTemplateScreenState extends State<DetailTemplateScreen> {
               padding: EdgeInsets.fromLTRB(24, 16, 24, MediaQuery.of(context).padding.bottom > 0 ? MediaQuery.of(context).padding.bottom : 24),
               decoration: const BoxDecoration(
                 color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, -5),
+                  )
+                ]
               ),
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _addToCart,
