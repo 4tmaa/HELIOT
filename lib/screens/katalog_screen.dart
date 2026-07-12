@@ -159,6 +159,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
         body: SafeArea(
+          bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

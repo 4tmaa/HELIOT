@@ -18,6 +18,7 @@ class _PesananScreenState extends State<PesananScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // Header

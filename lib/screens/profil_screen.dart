@@ -99,6 +99,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: isLoading
           ? _buildShimmerLoading()
           : Column(
@@ -176,16 +177,32 @@ class _ProfilScreenState extends State<ProfilScreen> {
                 padding: EdgeInsets.only(left: 4, bottom: 8),
                 child: CustomShimmerBox(height: 14, width: 100),
               ),
-              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
+              CustomShimmerBox(
+                height: 56,
+                borderRadius: 16,
+                margin: EdgeInsets.only(bottom: 12),
+              ),
               SizedBox(height: 16),
               Padding(
                 padding: EdgeInsets.only(left: 4, bottom: 8),
                 child: CustomShimmerBox(height: 14, width: 140),
               ),
-              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
-              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
+              CustomShimmerBox(
+                height: 56,
+                borderRadius: 16,
+                margin: EdgeInsets.only(bottom: 12),
+              ),
+              CustomShimmerBox(
+                height: 56,
+                borderRadius: 16,
+                margin: EdgeInsets.only(bottom: 12),
+              ),
               SizedBox(height: 16),
-              CustomShimmerBox(height: 56, borderRadius: 16, margin: EdgeInsets.only(bottom: 12)),
+              CustomShimmerBox(
+                height: 56,
+                borderRadius: 16,
+                margin: EdgeInsets.only(bottom: 12),
+              ),
             ],
           ),
         ),
@@ -247,14 +264,16 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    backgroundImage: userAvatar != null ? NetworkImage(userAvatar!) : null,
-                    child: userAvatar == null 
-                      ? const Icon(
-                          Icons.person_rounded,
-                          size: 40,
-                          color: _AppColors.primaryColor,
-                        )
-                      : null,
+                    backgroundImage: userAvatar != null
+                        ? NetworkImage(userAvatar!)
+                        : null,
+                    child: userAvatar == null
+                        ? const Icon(
+                            Icons.person_rounded,
+                            size: 40,
+                            color: _AppColors.primaryColor,
+                          )
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   Text(
