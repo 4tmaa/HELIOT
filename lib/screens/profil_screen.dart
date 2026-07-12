@@ -96,6 +96,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
   }
 
   Future<void> processLogout() async {
+    await LocalDatabaseService.instance.clearCache();
     await Supabase.instance.client.auth.signOut();
     if (mounted) {
       Navigator.pushAndRemoveUntil(

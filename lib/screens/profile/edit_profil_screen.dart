@@ -176,7 +176,6 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
         'id': activeUserId,
         'full_name': nameController.text.trim(),
         'phone_number': fullPhoneNumber,
-        'email': emailController.text.trim(),
         if (finalImageUrl != null) 'avatar_url': finalImageUrl,
       };
 
@@ -251,12 +250,14 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     required String label,
     required IconData icon,
     int maxLines = 1,
+    int? maxLength,
     TextInputType keyboardType = TextInputType.text,
     bool readOnly = false,
   }) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
+      maxLength: maxLength,
       keyboardType: keyboardType,
       readOnly: readOnly,
       style: TextStyle(
@@ -277,6 +278,7 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
           borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        counterText: maxLength != null ? null : '',
       ),
     );
   }
@@ -344,15 +346,29 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
             _buildModernTextField(
               controller: nameController,
               label: 'Nama Lengkap',
-              icon: Icons.badge_outlined,
+              icon: Icons.person_outline,
+              maxLength: 50,
             ),
             const SizedBox(height: 16),
             
-            _buildModernTextField(
-              controller: emailController,
-              label: 'Alamat Surel',
-              icon: Icons.email_outlined,
-              keyboardType: TextInputType.emailAddress,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildModernTextField(
+                  controller: emailController,
+                  label: 'Alamat Surel',
+                  icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                  readOnly: true,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 12, top: 4),
+                  child: Text(
+                    'Email tertaut dengan akun Anda dan tidak dapat diubah dari sini.',
+                    style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 12),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
 

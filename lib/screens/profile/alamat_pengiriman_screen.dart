@@ -336,6 +336,7 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
             TextFormField(
               controller: addressController,
               maxLines: 3,
+              maxLength: 200,
               style: const TextStyle(color: AppColors.mainTextColor),
               decoration: InputDecoration(
                 labelText: 'Detail Alamat Utama',
@@ -348,6 +349,7 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: detailController,
+              maxLength: 100,
               style: const TextStyle(color: AppColors.mainTextColor),
               decoration: InputDecoration(
                 labelText: 'Patokan / Detail Pendukung',
@@ -363,6 +365,7 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
             TextFormField(
               controller: postalCodeController,
               keyboardType: TextInputType.number,
+              maxLength: 10,
               style: const TextStyle(color: AppColors.mainTextColor),
               decoration: InputDecoration(
                 labelText: 'Kode Pos',
