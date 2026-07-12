@@ -145,6 +145,7 @@ class MultiSelectSection extends StatelessWidget {
         const SizedBox(height: 12),
         if (selectedList.isNotEmpty)
           ListView.builder(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: selectedList.length,
