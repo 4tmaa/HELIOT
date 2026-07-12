@@ -84,10 +84,16 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
   Map<String, dynamic> _getNotificationStyle(String type) {
     switch (type.toLowerCase()) {
       case 'pesanan':
-        return {'icon': Icons.local_shipping_rounded, 'color': Colors.blueAccent};
+        return {
+          'icon': Icons.local_shipping_rounded,
+          'color': Colors.blueAccent,
+        };
       case 'promo':
       case 'templat':
-        return {'icon': Icons.campaign_rounded, 'color': Colors.orangeAccent.shade700};
+        return {
+          'icon': Icons.campaign_rounded,
+          'color': Colors.orangeAccent.shade700,
+        };
       case 'peringatan':
         return {'icon': Icons.error_rounded, 'color': Colors.redAccent};
       default:
@@ -194,14 +200,14 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                               : style['color'].withValues(alpha: 0.2),
                           width: 1.5,
                         ),
-                        boxShadow: isRead 
+                        boxShadow: isRead
                             ? [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.02),
                                   blurRadius: 15,
                                   offset: const Offset(0, 4),
-                                )
-                              ] 
+                                ),
+                              ]
                             : [],
                       ),
                       child: Row(

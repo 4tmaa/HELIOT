@@ -97,37 +97,22 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 70,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
-        leading: Align(
-          alignment: Alignment.center,
-          child: Container(
-            margin: const EdgeInsets.only(left: 16),
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.primaryColor.withValues(alpha: 0.2),
-              ),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-              color: AppColors.primaryColor,
-              padding: EdgeInsets.zero,
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          color: Colors.grey.shade800,
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           widget.categoryName.toUpperCase(),
-          style: const TextStyle(
-            color: AppColors.mainTextColor,
+          style: TextStyle(
+            color: Colors.grey.shade800,
             fontSize: 16,
             fontWeight: FontWeight.w900,
             letterSpacing: 2.0,
@@ -150,7 +135,7 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
           ? Center(
               child: Text(
                 'Belum ada data untuk kategori ${widget.categoryName}',
-                style: const TextStyle(color: AppColors.secondaryTextColor),
+                style: TextStyle(color: Colors.grey.shade600),
               ),
             )
           : GridView.builder(
@@ -177,15 +162,9 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceColor,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      border: Border.all(color: Colors.grey.shade200, width: 1.5),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,26 +172,26 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
                         Expanded(
                           child: Container(
                             width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: AppColors.backgroundColor,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(14),
+                                topRight: Radius.circular(14),
                               ),
                             ),
                             child: ClipRRect(
                               borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16),
+                                topLeft: Radius.circular(14),
+                                topRight: Radius.circular(14),
                               ),
                               child: photoUrl != null && photoUrl.toString().isNotEmpty
                                   ? Image.network(
                                       photoUrl,
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) =>
-                                          const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                                          Icon(Icons.broken_image, color: Colors.grey.shade300, size: 40),
                                     )
-                                  : const Icon(Icons.developer_board, color: AppColors.primaryColor, size: 40),
+                                  : Icon(Icons.developer_board, color: Colors.grey.shade300, size: 40),
                             ),
                           ),
                         ),
@@ -223,15 +202,15 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
                             children: [
                               Text(
                                 item['title'] ?? '',
-                                style: const TextStyle(
-                                  color: AppColors.mainTextColor,
+                                style: TextStyle(
+                                  color: Colors.grey.shade800,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
                               Text(
                                 NumberFormat.currency(
                                   locale: 'id_ID',
