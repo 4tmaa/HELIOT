@@ -23,7 +23,7 @@ class DetailKomponenScreen extends StatelessWidget {
     final int basePrice = (product['base_price'] as num?)?.toInt() ?? 0;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           CustomScrollView(
@@ -31,7 +31,7 @@ class DetailKomponenScreen extends StatelessWidget {
               SliverAppBar(
                 expandedHeight: 350.0,
                 pinned: true,
-                backgroundColor: AppColors.backgroundColor,
+                backgroundColor: Colors.white,
                 elevation: 0,
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -62,10 +62,7 @@ class DetailKomponenScreen extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(24, 32, 24, 120),
-                  decoration: const BoxDecoration(
-                    color: AppColors.backgroundColor,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
-                  ),
+                  color: Colors.white,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -166,11 +163,8 @@ class DetailKomponenScreen extends StatelessWidget {
             right: 0,
             child: Container(
               padding: EdgeInsets.fromLTRB(24, 16, 24, MediaQuery.of(context).padding.bottom > 0 ? MediaQuery.of(context).padding.bottom : 24),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5)),
-                ],
               ),
               child: ElevatedButton(
                 onPressed: () {
