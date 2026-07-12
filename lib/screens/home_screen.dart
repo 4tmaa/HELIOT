@@ -6,6 +6,7 @@ import '../utils/app_colors.dart';
 import '../widgets/custom_loading.dart';
 import 'home/kategori_detail_screen.dart';
 import 'home/notifikasi_screen.dart';
+import 'catalog/detail_template_screen.dart';
 
 class BerandaScreen extends StatefulWidget {
   const BerandaScreen({super.key});
@@ -307,7 +308,16 @@ class _BerandaScreenState extends State<BerandaScreen> {
                       final template = templateList[index];
                       final photoUrl = template['photo_url'];
                       
-                      return Container(
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailTemplateScreen(template: template),
+                            ),
+                          );
+                        },
+                        child: Container(
                         margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(color: AppColors.surfaceColor, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]),
                         child: Row(
@@ -337,6 +347,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                               ),
                             ),
                           ],
+                        ),
                         ),
                       );
                     },
