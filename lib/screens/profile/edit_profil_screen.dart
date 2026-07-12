@@ -4,6 +4,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../utils/app_colors.dart';
+import '../../widgets/custom_toast.dart';
 
 class EditProfilScreen extends StatefulWidget {
   final String? initialName;
@@ -133,9 +134,7 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal membuka galeri.'), backgroundColor: Colors.redAccent),
-        );
+        CustomToast.show(context, message: 'Gagal membuka galeri.', type: ToastType.error);
       }
     }
   }
@@ -146,12 +145,7 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
     });
 
     if (nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nama Lengkap tidak boleh kosong.'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+      CustomToast.show(context, message: 'Nama Lengkap tidak boleh kosong.', type: ToastType.warning);
       setState(() => isSaving = false);
       return;
     }
@@ -190,12 +184,7 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal menyimpan: ${error.toString()}'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+        CustomToast.show(context, message: 'Gagal menyimpan: ${error.toString()}', type: ToastType.error);
       }
     } finally {
       if (mounted) {

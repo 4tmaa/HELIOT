@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import '../../utils/app_colors.dart';
+import '../../widgets/custom_toast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -111,9 +112,7 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
 
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
-        );
+        CustomToast.show(context, message: e.toString(), type: ToastType.error);
       }
     } finally {
       if (mounted) {
@@ -194,22 +193,14 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
       }
     } catch (fallbackError) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal mendeteksi lokasi. Periksa koneksi internet.'),
-            backgroundColor: AppColors.primaryColor,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        CustomToast.show(context, message: 'Gagal mendeteksi lokasi. Periksa koneksi internet.', type: ToastType.error);
       }
     }
   }
 
   Future<void> _saveAddress() async {
     if (addressController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Alamat utama belum terdeteksi.'), backgroundColor: Colors.redAccent),
-      );
+      CustomToast.show(context, message: 'Alamat utama belum terdeteksi.', type: ToastType.warning);
       return;
     }
 
@@ -246,16 +237,12 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Alamat pengiriman berhasil diperbarui.'), backgroundColor: Colors.green),
-        );
+        CustomToast.show(context, message: 'Alamat pengiriman berhasil diperbarui.', type: ToastType.success);
         Navigator.pop(context);
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: ${error.toString()}'), backgroundColor: Colors.redAccent),
-        );
+        CustomToast.show(context, message: 'Gagal menyimpan: ${error.toString()}', type: ToastType.error);
       }
     } finally {
       if (mounted) setState(() => isLoading = false);

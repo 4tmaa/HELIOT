@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../utils/app_colors.dart';
+import '../widgets/custom_loading.dart';
 import 'home/kategori_detail_screen.dart';
 import 'home/notifikasi_screen.dart';
 
@@ -283,7 +285,16 @@ class _BerandaScreenState extends State<BerandaScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (isLoadingTemplates)
-                  const Center(child: Padding(padding: EdgeInsets.all(32.0), child: CircularProgressIndicator(color: AppColors.primaryColor)))
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    itemCount: 3,
+                    itemBuilder: (context, index) => const Padding(
+                      padding: EdgeInsets.only(bottom: 16.0),
+                      child: CustomShimmerCard(height: 100, borderRadius: 16),
+                    ),
+                  )
                 else if (templateList.isEmpty)
                   const Center(child: Padding(padding: EdgeInsets.all(32.0), child: Text('Belum ada templat.', style: TextStyle(color: AppColors.secondaryTextColor))))
                 else

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../utils/app_colors.dart';
+import '../widgets/custom_toast.dart';
 import 'main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -65,13 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
           if (mounted) {
             // Tampilkan pesan instruksi cek surel
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Pendaftaran berhasil! Silakan cek kotak masuk surel Anda untuk klik tautan verifikasi.'),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 5),
-              ),
-            );
+            CustomToast.show(context, message: 'Pendaftaran berhasil! Silakan cek kotak masuk surel Anda untuk klik tautan verifikasi.', type: ToastType.success, duration: const Duration(seconds: 5));
             
             // Bersihkan kolom teks dan kembalikan ke mode Masuk
             passwordController.clear();
@@ -81,12 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error.toString()),
-            backgroundColor: AppColors.primaryColor,
-          ),
-        );
+        CustomToast.show(context, message: error.toString(), type: ToastType.error);
       }
     } finally {
       if (mounted) {

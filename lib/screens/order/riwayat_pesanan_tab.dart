@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../../utils/app_colors.dart';
+import 'package:heliot/widgets/custom_loading.dart';
 import 'detail_pesanan_screen.dart';
 
 class RiwayatPesananTab extends StatefulWidget {
@@ -91,7 +92,14 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primaryColor));
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        itemCount: 4,
+        itemBuilder: (context, index) => const Padding(
+          padding: EdgeInsets.only(bottom: 16.0),
+          child: CustomShimmerCard(height: 140, borderRadius: 16),
+        ),
+      );
     }
 
     if (_orderHistory.isEmpty) {

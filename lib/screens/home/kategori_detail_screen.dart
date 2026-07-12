@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/app_colors.dart';
+import '../../widgets/custom_loading.dart';
 
 class KategoriDetailScreen extends StatefulWidget {
   final String categoryName;
@@ -100,7 +101,17 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
         ),
       ),
       body: isLoadingData
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
+          ? GridView.builder(
+              padding: const EdgeInsets.all(16.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.8,
+              ),
+              itemCount: 6,
+              itemBuilder: (context, index) => const CustomShimmerCard(),
+            )
           : categoryItems.isEmpty
               ? Center(
                   child: Text(

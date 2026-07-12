@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/app_colors.dart';
+import '../../widgets/custom_toast.dart';
 
 class HubungiAdminScreen extends StatefulWidget {
   const HubungiAdminScreen({super.key});
@@ -32,9 +33,7 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
 
   Future<void> _sendMessage() async {
     if (_messageController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pesan tidak boleh kosong.'), backgroundColor: Colors.redAccent),
-      );
+      CustomToast.show(context, message: 'Pesan tidak boleh kosong.', type: ToastType.warning);
       return;
     }
 
@@ -54,16 +53,12 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
 
       if (mounted) {
         _messageController.clear();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pesan terkirim. Admin akan segera merespons.'), backgroundColor: Colors.green),
-        );
+        CustomToast.show(context, message: 'Pesan terkirim. Admin akan segera merespons.', type: ToastType.success);
         Navigator.pop(context);
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal mengirim pesan: ${error.toString()}'), backgroundColor: Colors.redAccent),
-        );
+        CustomToast.show(context, message: 'Gagal mengirim pesan: ${error.toString()}', type: ToastType.error);
       }
     } finally {
       if (mounted) {

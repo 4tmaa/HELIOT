@@ -1,7 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:heliot/utils/app_colors.dart';
 import 'package:heliot/services/cart_service.dart';
+import 'package:heliot/widgets/custom_toast.dart';
 import 'package:heliot/screens/profile/edit_profil_screen.dart';
 import 'package:heliot/screens/profile/alamat_pengiriman_screen.dart';
 import 'komponen_selection_card.dart';
@@ -245,7 +246,7 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     final currentSensors = CartService.instance.selectedSensors.value;
 
     if (_titleController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty || currentMCUs.isEmpty || currentSensors.isEmpty || _selectedPower == null || _selectedOutput == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Semua bidang wajib diisi.'), backgroundColor: Colors.redAccent));
+      CustomToast.show(context, message: 'Semua bidang wajib diisi.', type: ToastType.warning);
       return;
     }
 
@@ -317,7 +318,7 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: ${e.toString()}'), backgroundColor: Colors.redAccent));
+        CustomToast.show(context, message: 'Terjadi kesalahan: ${e.toString()}', type: ToastType.error);
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);

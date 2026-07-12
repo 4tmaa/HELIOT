@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../utils/app_colors.dart';
+import '../../widgets/custom_loading.dart';
 
 class NotifikasiScreen extends StatefulWidget {
   const NotifikasiScreen({super.key});
@@ -120,8 +121,14 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
               ),
             ),
             if (_isLoading)
-              const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator(color: AppColors.primaryColor)),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: CustomShimmerCard(height: 100, borderRadius: 16),
+                  ),
+                  childCount: 6,
+                ),
               )
             else if (_notifications.isEmpty)
               SliverFillRemaining(
