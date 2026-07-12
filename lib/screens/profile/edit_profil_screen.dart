@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../utils/app_colors.dart';
 import '../../widgets/custom_toast.dart';
+import '../../services/local_db_service.dart';
 
 class EditProfilScreen extends StatefulWidget {
   final String? initialName;
@@ -171,13 +172,23 @@ class _EditProfilScreenState extends State<EditProfilScreen> {
           ? '+$selectedCountryCode${phoneController.text.trim()}' 
           : '';
 
-      await supabaseClient.from('profiles').upsert({
+      final updatedProfile = {
         'id': activeUserId,
         'full_name': nameController.text.trim(),
         'phone_number': fullPhoneNumber,
         'email': emailController.text.trim(),
         if (finalImageUrl != null) 'avatar_url': finalImageUrl,
-      });
+      };
+
+      await supabaseClient.from('profiles').upsert(updatedProfile);
+
+      final cachedProfile = await LocalDatabaseService.instance.getCachedData('user_profile');
+      final mergedProfile = {
+        ...?cachedProfile as Map<String, dynamic>?,
+        ...updatedProfile,
+      };
+      await LocalDatabaseService.instance.saveToCache('user_profile', mergedProfile);
+      await LocalDatabaseService.instance.saveToCache('user_profile_age', DateTime.now().millisecondsSinceEpoch);
 
       if (mounted) {
         Navigator.pop(context);

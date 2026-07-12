@@ -8,6 +8,7 @@ import '../../utils/app_colors.dart';
 import '../../widgets/custom_toast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../services/local_db_service.dart';
 
 class AlamatPengirimanScreen extends StatefulWidget {
   const AlamatPengirimanScreen({super.key});
@@ -53,28 +54,44 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
     if (activeUser == null) return;
 
     try {
+      final cachedAddress = await LocalDatabaseService.instance.getCachedData('shipping_address');
+      if (cachedAddress != null && mounted) {
+        setState(() {
+          _updateAddressState(cachedAddress);
+        });
+      }
+
       final addressData = await supabaseClient
           .from('shipping_addresses')
           .select()
           .eq('user_id', activeUser.id)
           .maybeSingle();
 
-      if (mounted && addressData != null) {
-        setState(() {
-          addressController.text = addressData['full_address'] ?? '';
-          detailController.text = addressData['landmark'] ?? '';
-          postalCodeController.text = addressData['postal_code'] ?? '';
-          
-          if (addressData['latitude'] != null && addressData['longitude'] != null) {
-            currentLatLng = LatLng(addressData['latitude'], addressData['longitude']);
-            _setMarker(currentLatLng);
-            _mapController.move(currentLatLng, 15.0);
-          } else {
-            _setMarker(currentLatLng);
-          }
-        });
+      if (addressData != null) {
+        await LocalDatabaseService.instance.saveToCache('shipping_address', addressData);
+        if (mounted) {
+          setState(() {
+            _updateAddressState(addressData);
+          });
+        }
+      } else if (cachedAddress == null) {
+        _setMarker(currentLatLng);
       }
     } catch (e) {
+      _setMarker(currentLatLng);
+    }
+  }
+
+  void _updateAddressState(Map<String, dynamic> addressData) {
+    addressController.text = addressData['full_address'] ?? '';
+    detailController.text = addressData['landmark'] ?? '';
+    postalCodeController.text = addressData['postal_code'] ?? '';
+    
+    if (addressData['latitude'] != null && addressData['longitude'] != null) {
+      currentLatLng = LatLng(addressData['latitude'], addressData['longitude']);
+      _setMarker(currentLatLng);
+      _mapController.move(currentLatLng, 15.0);
+    } else {
       _setMarker(currentLatLng);
     }
   }
@@ -235,6 +252,8 @@ class _AlamatPengirimanScreenState extends State<AlamatPengirimanScreen> {
             .from('shipping_addresses')
             .insert(addressDataToSave);
       }
+
+      await LocalDatabaseService.instance.saveToCache('shipping_address', addressDataToSave);
 
       if (mounted) {
         CustomToast.show(context, message: 'Alamat pengiriman berhasil diperbarui.', type: ToastType.success);

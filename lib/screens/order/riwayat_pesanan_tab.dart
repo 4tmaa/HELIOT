@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../utils/app_colors.dart';
 import 'package:heliot/widgets/custom_loading.dart';
 import 'detail_pesanan_screen.dart';
+import '../../services/local_db_service.dart';
 
 class RiwayatPesananTab extends StatefulWidget {
   const RiwayatPesananTab({super.key});
@@ -23,8 +24,26 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
     _fetchOrderHistory();
   }
 
-  Future<void> _fetchOrderHistory() async {
-    setState(() => _isLoading = true);
+  Future<void> _fetchOrderHistory({bool force = false}) async {
+    final cached = await LocalDatabaseService.instance.getCachedData('order_history');
+    if (cached != null) {
+      if (mounted) {
+        setState(() {
+          _orderHistory = List<Map<String, dynamic>>.from(cached);
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() => _isLoading = true);
+    }
+
+    final cacheAge = await LocalDatabaseService.instance.getCachedData('order_history_age');
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final int lastFetched = cacheAge is int ? cacheAge : 0;
+
+    if (!force && cached != null && (now - lastFetched < 30000)) {
+      return;
+    }
 
     try {
       final activeUser = supabaseClient.auth.currentUser;
@@ -35,6 +54,9 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
           .select()
           .eq('user_id', activeUser.id)
           .order('created_at', ascending: false);
+
+      await LocalDatabaseService.instance.saveToCache('order_history', response);
+      await LocalDatabaseService.instance.saveToCache('order_history_age', now);
 
       if (mounted) {
         setState(() {
@@ -138,7 +160,7 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
 
     return RefreshIndicator(
       color: AppColors.primaryColor,
-      onRefresh: _fetchOrderHistory,
+      onRefresh: () => _fetchOrderHistory(force: true),
       child: ListView.builder(
         padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 8.0, bottom: 100.0),
         itemCount: _orderHistory.length,
@@ -157,7 +179,7 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
                 MaterialPageRoute(
                   builder: (context) => DetailPesananScreen(orderData: order),
                 ),
-              ).then((_) => _fetchOrderHistory());
+              ).then((_) => _fetchOrderHistory(force: true));
             },
             child: Container(
               margin: const EdgeInsets.only(bottom: 16),

@@ -6,6 +6,7 @@ import 'profile/alamat_pengiriman_screen.dart';
 import 'profile/hubungi_admin_screen.dart';
 import 'profile/pusat_bantuan_screen.dart';
 import '../widgets/custom_loading.dart';
+import '../services/local_db_service.dart';
 
 class _AppColors {
   static const Color primaryColor = Color(0xFFE63946);
@@ -37,38 +38,54 @@ class _ProfilScreenState extends State<ProfilScreen> {
     fetchUserData();
   }
 
+  void _updateProfileState(Map<String, dynamic>? profileData, String defaultEmail) {
+    if (profileData != null) {
+      userName = profileData['full_name'] ?? 'Pengguna IoT';
+      userEmail = profileData['email'] ?? defaultEmail;
+      userPhone = profileData['phone_number'] ?? 'Belum diatur';
+      userAddress = profileData['address'] ?? 'Belum diatur';
+      userAvatar = profileData['avatar_url'];
+    } else {
+      userName = 'Pengguna Baru';
+      userEmail = defaultEmail;
+      userPhone = 'Belum diatur';
+      userAddress = 'Belum diatur';
+      userAvatar = null;
+    }
+  }
+
   Future<void> fetchUserData() async {
     try {
       final activeUser = Supabase.instance.client.auth.currentUser;
 
       if (activeUser != null) {
+        final cachedProfile = await LocalDatabaseService.instance.getCachedData('user_profile');
+        if (cachedProfile != null && mounted) {
+          setState(() {
+            _updateProfileState(cachedProfile, activeUser.email ?? '');
+            isLoading = false;
+          });
+        }
+
         final profileData = await Supabase.instance.client
             .from('profiles')
             .select()
             .eq('id', activeUser.id)
             .maybeSingle();
 
+        if (profileData != null) {
+          await LocalDatabaseService.instance.saveToCache('user_profile', profileData);
+        }
+
         if (mounted) {
           setState(() {
-            if (profileData != null) {
-              userName = profileData['full_name'] ?? 'Pengguna IoT';
-              userEmail = profileData['email'] ?? activeUser.email ?? '';
-              userPhone = profileData['phone_number'] ?? 'Belum diatur';
-              userAddress = profileData['address'] ?? 'Belum diatur';
-              userAvatar = profileData['avatar_url'];
-            } else {
-              userName = 'Pengguna Baru';
-              userEmail = activeUser.email ?? '';
-              userPhone = 'Belum diatur';
-              userAddress = 'Belum diatur';
-              userAvatar = null;
-            }
+            _updateProfileState(profileData ?? cachedProfile, activeUser.email ?? '');
             isLoading = false;
           });
         }
       }
     } catch (error) {
-      if (mounted) {
+      if (mounted && userName == 'Memuat...') {
         setState(() {
           userName = 'Gagal Memuat';
           userEmail = 'Periksa Koneksi';

@@ -161,13 +161,14 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
   }
 
   Future<void> _fetchAllOptions() async {
-    // Helper function to handle caching
     Future<dynamic> _fetchWithCache(
       String cacheKey,
-      Future<dynamic> Function() fetchCallback,
-    ) async {
+      Future<dynamic> Function() fetchCallback, {
+      Duration maxAge = const Duration(hours: 12),
+    }) async {
       final cached = await LocalDatabaseService.instance.getCachedData(
         cacheKey,
+        maxAge: maxAge,
       );
       if (cached != null) return cached;
       final result = await fetchCallback();
@@ -179,19 +180,16 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
 
     try {
       final compRes = await _fetchWithCache(
-        'components_proyek',
+        'components',
         () => supabaseClient
             .from('components')
-            .select('name, category, base_price, difficulty_score'),
+            .select(),
       );
       if (compRes != null && mounted) {
+        final compList = List<Map<String, dynamic>>.from(compRes);
         setState(() {
-          _mcuList = List<Map<String, dynamic>>.from(
-            compRes.where((e) => e['category'] == 'Mikrokontroler'),
-          );
-          _sensorList = List<Map<String, dynamic>>.from(
-            compRes.where((e) => e['category'] == 'Sensor'),
-          );
+          _mcuList = compList.where((e) => e['category'] == 'Mikrokontroler').toList();
+          _sensorList = compList.where((e) => e['category'] == 'Sensor').toList();
         });
       }
     } catch (e) {
@@ -458,11 +456,18 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
       final activeUser = supabaseClient.auth.currentUser;
       if (activeUser == null) throw Exception('Sesi tidak valid');
 
-      final profileRes = await supabaseClient
-          .from('profiles')
-          .select('full_name, phone_number')
-          .eq('id', activeUser.id)
-          .maybeSingle();
+      Map<String, dynamic>? profileRes = await LocalDatabaseService.instance.getCachedData('user_profile');
+      if (profileRes == null) {
+        profileRes = await supabaseClient
+            .from('profiles')
+            .select('full_name, phone_number')
+            .eq('id', activeUser.id)
+            .maybeSingle();
+        if (profileRes != null) {
+          await LocalDatabaseService.instance.saveToCache('user_profile', profileRes);
+        }
+      }
+
       if (profileRes == null ||
           profileRes['full_name'] == null ||
           profileRes['phone_number'] == null ||
@@ -475,11 +480,18 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
         return;
       }
 
-      final addressRes = await supabaseClient
-          .from('shipping_addresses')
-          .select('full_address')
-          .eq('user_id', activeUser.id)
-          .maybeSingle();
+      Map<String, dynamic>? addressRes = await LocalDatabaseService.instance.getCachedData('shipping_address');
+      if (addressRes == null) {
+        addressRes = await supabaseClient
+            .from('shipping_addresses')
+            .select('full_address')
+            .eq('user_id', activeUser.id)
+            .maybeSingle();
+        if (addressRes != null) {
+          await LocalDatabaseService.instance.saveToCache('shipping_address', addressRes);
+        }
+      }
+
       if (addressRes == null ||
           addressRes['full_address'] == null ||
           addressRes['full_address'].toString().isEmpty) {

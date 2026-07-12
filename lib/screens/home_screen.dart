@@ -53,16 +53,42 @@ class _BerandaScreenState extends State<BerandaScreen> {
     try {
       final activeUser = supabaseClient.auth.currentUser;
       if (activeUser != null) {
+        final cachedProfile = await LocalDatabaseService.instance.getCachedData('user_profile');
+        if (cachedProfile != null && mounted) {
+          setState(() {
+            userName = cachedProfile['full_name'] ?? 'Pengguna';
+          });
+        }
+
+        final cacheAge = await LocalDatabaseService.instance.getCachedData('user_profile_age');
+        final now = DateTime.now().millisecondsSinceEpoch;
+        final int lastFetched = cacheAge is int ? cacheAge : 0;
+
+        if (cachedProfile != null && (now - lastFetched < 3600000)) {
+          return;
+        }
+
         final profileData = await supabaseClient
             .from('profiles')
             .select('full_name')
             .eq('id', activeUser.id)
             .single();
-        if (mounted)
+
+        final mergedProfile = {
+          ...?cachedProfile as Map<String, dynamic>?,
+          'full_name': profileData['full_name'],
+        };
+        await LocalDatabaseService.instance.saveToCache('user_profile', mergedProfile);
+        await LocalDatabaseService.instance.saveToCache('user_profile_age', now);
+
+        if (mounted) {
           setState(() => userName = profileData['full_name'] ?? 'Pengguna');
+        }
       }
     } catch (e) {
-      if (mounted) setState(() => userName = 'Pengguna');
+      if (mounted && userName == 'Memuat...') {
+        setState(() => userName = 'Pengguna');
+      }
     }
   }
 
@@ -71,6 +97,20 @@ class _BerandaScreenState extends State<BerandaScreen> {
       final activeUser = supabaseClient.auth.currentUser;
       if (activeUser == null) return;
 
+      final cacheAge = await LocalDatabaseService.instance.getCachedData('unread_notifications_age');
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final int lastChecked = cacheAge is int ? cacheAge : 0;
+      final cachedHasUnread = await LocalDatabaseService.instance.getCachedData('unread_notifications_flag');
+
+      if (cachedHasUnread != null && (now - lastChecked < 60000)) {
+        if (mounted) {
+          setState(() {
+            hasUnreadNotifications = cachedHasUnread == true;
+          });
+        }
+        return;
+      }
+
       final response = await supabaseClient
           .from('notifications')
           .select('id')
@@ -78,9 +118,13 @@ class _BerandaScreenState extends State<BerandaScreen> {
           .eq('is_read', false)
           .limit(1);
 
+      final hasUnread = response.isNotEmpty;
+      await LocalDatabaseService.instance.saveToCache('unread_notifications_flag', hasUnread);
+      await LocalDatabaseService.instance.saveToCache('unread_notifications_age', now);
+
       if (mounted) {
         setState(() {
-          hasUnreadNotifications = response.isNotEmpty;
+          hasUnreadNotifications = hasUnread;
         });
       }
     } catch (e) {
