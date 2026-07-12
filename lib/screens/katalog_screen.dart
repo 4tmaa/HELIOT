@@ -76,8 +76,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(
-        child: Column(
+      body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
@@ -90,7 +89,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+                    padding: EdgeInsets.fromLTRB(24, MediaQuery.of(context).padding.top + 24, 24, 20),
                     child: Column(
                       children: [
                         Container(
@@ -161,7 +160,6 @@ class _KatalogScreenState extends State<KatalogScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 

@@ -34,7 +34,7 @@ class _MainNavigationState extends State<MainNavigation> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: currentIndex == 0 ? Brightness.light : Brightness.dark,
+        statusBarIconBrightness: (currentIndex == 0 || currentIndex == 1) ? Brightness.light : Brightness.dark,
         systemNavigationBarColor: Colors.white,
         systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
