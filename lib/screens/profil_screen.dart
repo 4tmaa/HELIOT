@@ -105,25 +105,25 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   const SizedBox(height: 24),
                   _buildSectionHeader('Akun Anda'),
                   _buildMenuTile(
-                    icon: Icons.location_on_outlined,
+                    icon: Icons.location_on_rounded,
                     title: 'Alamat Pengiriman',
                     onTapAction: () => navigateToPage(const AlamatPengirimanScreen()),
                   ),
                   const SizedBox(height: 16),
                   _buildSectionHeader('Informasi & Bantuan'),
                   _buildMenuTile(
-                    icon: Icons.support_agent_outlined,
+                    icon: Icons.support_agent_rounded,
                     title: 'Hubungi Admin',
                     onTapAction: () => navigateToPage(const HubungiAdminScreen()),
                   ),
                   _buildMenuTile(
-                    icon: Icons.help_outline,
+                    icon: Icons.help_rounded,
                     title: 'Pusat Bantuan',
                     onTapAction: () => navigateToPage(const PusatBantuanScreen()),
                   ),
                   const SizedBox(height: 16),
                   _buildMenuTile(
-                    icon: Icons.logout_outlined,
+                    icon: Icons.logout_rounded,
                     title: 'Keluar',
                     isDestructive: true,
                     onTapAction: processLogout,
@@ -191,7 +191,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   const CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 40, color: _AppColors.primaryColor),
+                    child: Icon(Icons.person_rounded, size: 45, color: _AppColors.primaryColor),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -218,7 +218,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
                         initialEmail: userEmail,
                         initialAddress: userAddress,
                       )),
-                      icon: const Icon(Icons.edit, size: 16, color: _AppColors.primaryColor),
+                      icon: const Icon(Icons.edit_rounded, size: 18, color: _AppColors.primaryColor),
                       label: const Text(
                         'Edit Profil',
                         style: TextStyle(color: _AppColors.primaryColor, fontWeight: FontWeight.bold),
@@ -281,19 +281,12 @@ class _ProfilScreenState extends State<ProfilScreen> {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: iconColor),
-        ),
+        leading: Icon(icon, color: iconColor, size: 30),
         title: Text(
           title,
           style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
         ),
-        trailing: const Icon(Icons.chevron_right, color: _AppColors.secondaryTextColor),
+        trailing: const Icon(Icons.chevron_right_rounded, color: _AppColors.secondaryTextColor),
         onTap: onTapAction,
       ),
     );
