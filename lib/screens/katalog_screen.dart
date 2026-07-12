@@ -21,8 +21,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
   bool isLoading = true;
   int _selectedIndex = 0;
   String _searchQuery = '';
-
-  final List<String> _categories = ['Semua', 'Mikrokontroler', 'Sensor'];
+  final List<String> _categories = ['Semua', 'Mikrokontroler', 'Sensor', 'Aktuator', 'Komunikasi', 'Display', 'Lainnya'];
 
   @override
   void initState() {
@@ -97,13 +96,10 @@ class _KatalogScreenState extends State<KatalogScreen> {
   List<dynamic> _getFilteredList() {
     List<dynamic> filtered = componentList;
 
-    if (_selectedIndex == 1) {
+    if (_selectedIndex > 0 && _selectedIndex < _categories.length) {
+      final selectedCategory = _categories[_selectedIndex];
       filtered = filtered
-          .where((item) => item['category'] == 'Mikrokontroler')
-          .toList();
-    } else if (_selectedIndex == 2) {
-      filtered = filtered
-          .where((item) => item['category'].toString().contains('Sensor'))
+          .where((item) => item['category'].toString().contains(selectedCategory))
           .toList();
     }
 
