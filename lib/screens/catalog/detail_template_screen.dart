@@ -17,7 +17,7 @@ class DetailTemplateScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final photoUrl = template['photo_url'];
     final String title = template['title'] ?? 'Proyek Tanpa Nama';
-    final String description = template['description'] ?? 'Belum ada deskripsi lengkap untuk templat ini.';
+    final String description = template['description'] ?? 'Belum ada deskripsi lengkap untuk proyek ini.';
     final dynamic estimatedPrice = template['estimated_price'];
 
     return Scaffold(
@@ -71,7 +71,7 @@ class DetailTemplateScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
-                          'TEMPLAT',
+                          'PROYEK',
                           style: TextStyle(color: AppColors.primaryColor, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                         ),
                       ),
@@ -94,7 +94,7 @@ class DetailTemplateScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
                       const Text(
-                        'Deskripsi Templat',
+                        'Deskripsi Proyek',
                         style: TextStyle(color: AppColors.mainTextColor, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
@@ -123,7 +123,7 @@ class DetailTemplateScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   // Currently just shows toast. In the future this can navigate to "Buat Proyek" and fill the cart.
-                  CustomToast.show(context, message: 'Fitur pengisian otomatis dari templat segera hadir!', type: ToastType.info);
+                  CustomToast.show(context, message: 'Fitur pengisian otomatis dari proyek segera hadir!', type: ToastType.info);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
@@ -137,7 +137,7 @@ class DetailTemplateScreen extends StatelessWidget {
                     Icon(Icons.auto_awesome, color: Colors.white),
                     SizedBox(width: 12),
                     Text(
-                      'Gunakan Templat',
+                      'Gunakan Proyek',
                       style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],

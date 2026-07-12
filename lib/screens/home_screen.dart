@@ -490,7 +490,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        'Rekomendasi Templat',
+                        'Rekomendasi Proyek',
                         style: TextStyle(
                           color: AppColors.mainTextColor,
                           fontSize: 18,
@@ -498,7 +498,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => navigateToCategory('Templat Populer'),
+                        onTap: () => navigateToCategory('Proyek Populer'),
                         child: const Text(
                           'Lihat Semua',
                           style: TextStyle(
@@ -528,7 +528,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                     child: Padding(
                       padding: EdgeInsets.all(32.0),
                       child: Text(
-                        'Belum ada templat.',
+                        'Belum ada proyek.',
                         style: TextStyle(color: AppColors.secondaryTextColor),
                       ),
                     ),

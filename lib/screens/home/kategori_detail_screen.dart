@@ -44,7 +44,7 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
         final supabase = Supabase.instance.client;
         List<dynamic> delta = [];
         
-        if (widget.categoryName == 'Templat Populer') {
+        if (widget.categoryName == 'Proyek Populer') {
           delta = await supabase.from('templates').select().gt('updated_at', lastSync);
         } else {
           delta = await supabase
@@ -67,7 +67,7 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
         final supabase = Supabase.instance.client;
         List<dynamic> responseData;
 
-        if (widget.categoryName == 'Templat Populer') {
+        if (widget.categoryName == 'Proyek Populer') {
           responseData = await supabase.from('templates').select();
         } else {
           responseData = await supabase
