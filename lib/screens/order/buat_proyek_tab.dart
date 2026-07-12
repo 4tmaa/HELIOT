@@ -60,10 +60,58 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
           CartService.instance.initialProjectDescription!;
     }
 
-    _fetchAllOptions();
-    _fetchUserProfile();
+    _loadCachedOrderState().then((_) {
+      _fetchAllOptions();
+      _fetchUserProfile();
+    });
+    
+    _titleController.addListener(_saveOrderState);
+    _descriptionController.addListener(_saveOrderState);
+    _userNameController.addListener(_saveOrderState);
+    _userEmailController.addListener(_saveOrderState);
+    _userPhoneController.addListener(_saveOrderState);
+
     CartService.instance.selectedMCUs.addListener(_onCartChanged);
     CartService.instance.selectedSensors.addListener(_onCartChanged);
+  }
+
+  Future<void> _loadCachedOrderState() async {
+    final cachedStep = await LocalDatabaseService.instance.getCachedData('order_current_step');
+    if (cachedStep != null && mounted) {
+      setState(() {
+        _currentStep = int.tryParse(cachedStep.toString()) ?? 0;
+      });
+    }
+
+    final cachedForm = await LocalDatabaseService.instance.getCachedData('order_form_data');
+    if (cachedForm != null && mounted) {
+      setState(() {
+        if (cachedForm['title'] != null && _titleController.text.isEmpty) _titleController.text = cachedForm['title'];
+        if (cachedForm['desc'] != null && _descriptionController.text.isEmpty) _descriptionController.text = cachedForm['desc'];
+        if (cachedForm['userName'] != null && _userNameController.text.isEmpty) _userNameController.text = cachedForm['userName'];
+        if (cachedForm['userEmail'] != null && _userEmailController.text.isEmpty) _userEmailController.text = cachedForm['userEmail'];
+        if (cachedForm['userPhone'] != null && _userPhoneController.text.isEmpty) _userPhoneController.text = cachedForm['userPhone'];
+        if (cachedForm['output'] != null && _selectedOutput == null) _selectedOutput = cachedForm['output'];
+        if (cachedForm['power'] != null && _selectedPower == null) _selectedPower = cachedForm['power'];
+        if (cachedForm['connectivity'] != null && _selectedConnectivity == null) _selectedConnectivity = cachedForm['connectivity'];
+        if (cachedForm['enclosure'] != null && _selectedEnclosure == null) _selectedEnclosure = cachedForm['enclosure'];
+      });
+    }
+  }
+
+  void _saveOrderState() {
+    LocalDatabaseService.instance.saveToCache('order_current_step', _currentStep);
+    LocalDatabaseService.instance.saveToCache('order_form_data', {
+      'title': _titleController.text,
+      'desc': _descriptionController.text,
+      'userName': _userNameController.text,
+      'userEmail': _userEmailController.text,
+      'userPhone': _userPhoneController.text,
+      'output': _selectedOutput,
+      'power': _selectedPower,
+      'connectivity': _selectedConnectivity,
+      'enclosure': _selectedEnclosure,
+    });
   }
 
   Future<void> _fetchUserProfile() async {
@@ -91,6 +139,12 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
 
   @override
   void dispose() {
+    _titleController.removeListener(_saveOrderState);
+    _descriptionController.removeListener(_saveOrderState);
+    _userNameController.removeListener(_saveOrderState);
+    _userEmailController.removeListener(_saveOrderState);
+    _userPhoneController.removeListener(_saveOrderState);
+
     CartService.instance.selectedMCUs.removeListener(_onCartChanged);
     CartService.instance.selectedSensors.removeListener(_onCartChanged);
     _titleController.dispose();
@@ -483,6 +537,8 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
         _descriptionController.clear();
         setState(() {
           CartService.instance.clearCart();
+          LocalDatabaseService.instance.saveToCache('order_current_step', 0);
+          LocalDatabaseService.instance.saveToCache('order_form_data', null);
           _selectedConnectivity = null;
           _selectedEnclosure = null;
           _selectedOutput = null;
@@ -530,6 +586,7 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     setState(() {
       _currentStep += 1;
     });
+    _saveOrderState();
   }
 
   void _onStepCancel() {
@@ -537,6 +594,7 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
       setState(() {
         _currentStep -= 1;
       });
+      _saveOrderState();
     }
   }
 
@@ -617,7 +675,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
               selectedValue: _selectedOutput,
               items: _outputList,
               isLoading: _isLoadingData,
-              onSelected: (val) => setState(() => _selectedOutput = val),
+              onSelected: (val) {
+                setState(() => _selectedOutput = val);
+                _saveOrderState();
+              },
             ),
             const SizedBox(height: 16),
             KomponenSelectionCard(
@@ -627,7 +688,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
               selectedValue: _selectedPower,
               items: _powerList,
               isLoading: _isLoadingData,
-              onSelected: (val) => setState(() => _selectedPower = val),
+              onSelected: (val) {
+                setState(() => _selectedPower = val);
+                _saveOrderState();
+              },
             ),
             const SizedBox(height: 16),
             KomponenSelectionCard(
@@ -637,7 +701,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
               selectedValue: _selectedConnectivity,
               items: _connectivityList,
               isLoading: _isLoadingData,
-              onSelected: (val) => setState(() => _selectedConnectivity = val),
+              onSelected: (val) {
+                setState(() => _selectedConnectivity = val);
+                _saveOrderState();
+              },
             ),
             const SizedBox(height: 16),
             KomponenSelectionCard(
@@ -647,7 +714,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
               selectedValue: _selectedEnclosure,
               items: _enclosureList,
               isLoading: _isLoadingData,
-              onSelected: (val) => setState(() => _selectedEnclosure = val),
+              onSelected: (val) {
+                setState(() => _selectedEnclosure = val);
+                _saveOrderState();
+              },
             ),
           ],
 
