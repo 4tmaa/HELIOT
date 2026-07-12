@@ -344,6 +344,102 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
   }
 
+  void _showSpesifikasiTambahanModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              decoration: const BoxDecoration(
+                color: AppColors.backgroundColor,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    height: 5,
+                    width: 50,
+                    decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(10)),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text('Spesifikasi Tambahan', style: TextStyle(color: AppColors.mainTextColor, fontSize: 18, fontWeight: FontWeight.bold)),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Column(
+                        children: [
+                          KomponenSelectionCard(
+                            title: 'Platform Output (Opsional)',
+                            subtitle: 'Medium untuk memantau data perangkat.',
+                            icon: Icons.dashboard_customize,
+                            selectedValue: _selectedOutput,
+                            items: _outputList,
+                            isLoading: _isLoadingData,
+                            onSelected: (val) {
+                              setState(() => _selectedOutput = val);
+                              setModalState(() {});
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          KomponenSelectionCard(
+                            title: 'Sumber Daya Listrik *',
+                            subtitle: 'Metode pemberian daya pada alat.',
+                            icon: Icons.battery_charging_full,
+                            selectedValue: _selectedPower,
+                            items: _powerList,
+                            isLoading: _isLoadingData,
+                            onSelected: (val) {
+                              setState(() => _selectedPower = val);
+                              setModalState(() {});
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          KomponenSelectionCard(
+                            title: 'Modul Konektivitas',
+                            subtitle: 'Jalur komunikasi pengiriman data.',
+                            icon: Icons.wifi,
+                            selectedValue: _selectedConnectivity,
+                            items: _connectivityList,
+                            isLoading: _isLoadingData,
+                            onSelected: (val) {
+                              setState(() => _selectedConnectivity = val);
+                              setModalState(() {});
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          KomponenSelectionCard(
+                            title: 'Bentuk Fisik (Enclosure)',
+                            subtitle: 'Pelindung fisik komponen sirkuit.',
+                            icon: Icons.view_in_ar,
+                            selectedValue: _selectedEnclosure,
+                            items: _enclosureList,
+                            isLoading: _isLoadingData,
+                            onSelected: (val) {
+                              setState(() => _selectedEnclosure = val);
+                              setModalState(() {});
+                            },
+                          ),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final costs = _calculateCosts();
@@ -398,55 +494,35 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
                 BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))
               ]
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                const Row(
-                  children: [
-                    Icon(Icons.tune_rounded, color: AppColors.primaryColor, size: 22),
-                    SizedBox(width: 8),
-                    Text('Spesifikasi Tambahan', style: TextStyle(color: AppColors.mainTextColor, fontSize: 16, fontWeight: FontWeight.bold)),
-                  ],
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.tune_rounded, color: AppColors.primaryColor),
                 ),
-                const SizedBox(height: 16),
-                KomponenSelectionCard(
-                  title: 'Platform Output (Opsional)',
-                  subtitle: 'Medium untuk memantau data perangkat.',
-                  icon: Icons.dashboard_customize,
-                  selectedValue: _selectedOutput,
-                  items: _outputList,
-                  isLoading: _isLoadingData,
-                  onSelected: (val) => setState(() => _selectedOutput = val),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Spesifikasi Tambahan', style: TextStyle(color: AppColors.mainTextColor, fontSize: 16, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 4),
+                      Text('Output, Daya, Koneksi, Enclosure', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 12)),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                KomponenSelectionCard(
-                  title: 'Sumber Daya Listrik *',
-                  subtitle: 'Metode pemberian daya pada alat.',
-                  icon: Icons.battery_charging_full,
-                  selectedValue: _selectedPower,
-                  items: _powerList,
-                  isLoading: _isLoadingData,
-                  onSelected: (val) => setState(() => _selectedPower = val),
-                ),
-                const SizedBox(height: 16),
-                KomponenSelectionCard(
-                  title: 'Modul Konektivitas',
-                  subtitle: 'Jalur komunikasi pengiriman data.',
-                  icon: Icons.wifi,
-                  selectedValue: _selectedConnectivity,
-                  items: _connectivityList,
-                  isLoading: _isLoadingData,
-                  onSelected: (val) => setState(() => _selectedConnectivity = val),
-                ),
-                const SizedBox(height: 16),
-                KomponenSelectionCard(
-                  title: 'Bentuk Fisik (Enclosure)',
-                  subtitle: 'Pelindung fisik komponen sirkuit.',
-                  icon: Icons.view_in_ar,
-                  selectedValue: _selectedEnclosure,
-                  items: _enclosureList,
-                  isLoading: _isLoadingData,
-                  onSelected: (val) => setState(() => _selectedEnclosure = val),
+                OutlinedButton(
+                  onPressed: () => _showSpesifikasiTambahanModal(context),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primaryColor,
+                    side: BorderSide(color: AppColors.primaryColor.withValues(alpha: 0.5)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Atur', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
