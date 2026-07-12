@@ -1,8 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:heliot/utils/app_colors.dart';
 import 'package:heliot/services/cart_service.dart';
 import 'diagonal_banner_painter.dart';
+import '../custom_toast.dart';
 
 class FeaturedComponentCard extends StatelessWidget {
   final dynamic product;
@@ -126,7 +127,7 @@ class FeaturedComponentCard extends StatelessWidget {
                           GestureDetector(
                             onTap: () {
                               CartService.instance.addComponent(product);
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${product['name']} ditambahkan ke pesanan', style: const TextStyle(color: Colors.white)), backgroundColor: AppColors.primaryColor, duration: const Duration(seconds: 1)));
+                              CustomToast.show(context, message: '${product['name']} ditambahkan ke pesanan', type: ToastType.success, duration: const Duration(seconds: 2));
                             },
                             child: Container(
                               padding: const EdgeInsets.all(12),
