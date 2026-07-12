@@ -170,7 +170,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
             setState(() {
               final activeTemplates = merged.where((e) => e['is_deleted'] != true).toList();
               // Sort arbitrarily or by created_at, then limit to 5
-              activeTemplates.sort((a, b) => (b['created_at'] ?? '').toString().compareTo((a['created_at'] ?? '').toString()));
+              activeTemplates.sort((a, b) => (b['id'] ?? 0).compareTo((a['id'] ?? 0)));
               templateList = activeTemplates.take(5).toList();
             });
           }
@@ -186,7 +186,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
         final responseData = await supabaseClient
             .from('templates')
             .select()
-            .order('created_at', ascending: false);
+            .order('id', ascending: false);
 
         await LocalDatabaseService.instance.saveToCache(
           'templates_home',
