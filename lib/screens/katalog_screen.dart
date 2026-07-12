@@ -186,11 +186,15 @@ class _KatalogScreenState extends State<KatalogScreen> {
                 child: Container(
                   height: 55,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: AppColors.primaryColor,
+                      width: 1.5,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
+                        color: AppColors.primaryColor.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -205,42 +209,49 @@ class _KatalogScreenState extends State<KatalogScreen> {
                     },
                     decoration: InputDecoration(
                       hintText: 'Cari komponen...',
-                      hintStyle: const TextStyle(
-                        color: Colors.white70,
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
                         fontSize: 14,
                       ),
                       border: InputBorder.none,
-                      prefixIcon: const Icon(Icons.search, color: Colors.white),
-                      suffixIcon: PopupMenuButton<int>(
-                        icon: const Icon(Icons.tune, color: Colors.white),
-                        onSelected: (int index) {
-                          setState(() {
-                            _selectedIndex = index;
-                          });
-                        },
-                        itemBuilder: (BuildContext context) {
-                          return List.generate(_categories.length, (index) {
-                            return PopupMenuItem<int>(
-                              value: index,
-                              child: Text(
-                                _categories[index],
-                                style: TextStyle(
-                                  color: _selectedIndex == index
-                                      ? AppColors.primaryColor
-                                      : AppColors.mainTextColor,
-                                  fontWeight: _selectedIndex == index
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
+                      prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
+                      suffixIcon: Container(
+                        margin: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: AppColors.primaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: PopupMenuButton<int>(
+                          icon: const Icon(Icons.tune, color: Colors.white, size: 20),
+                          onSelected: (int index) {
+                            setState(() {
+                              _selectedIndex = index;
+                            });
+                          },
+                          itemBuilder: (BuildContext context) {
+                            return List.generate(_categories.length, (index) {
+                              return PopupMenuItem<int>(
+                                value: index,
+                                child: Text(
+                                  _categories[index],
+                                  style: TextStyle(
+                                    color: _selectedIndex == index
+                                        ? AppColors.primaryColor
+                                        : AppColors.mainTextColor,
+                                    fontWeight: _selectedIndex == index
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
                                 ),
-                              ),
-                            );
-                          });
-                        },
+                              );
+                            });
+                          },
+                        ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(vertical: 18),
                     ),
-                    cursorColor: Colors.white,
-                    style: const TextStyle(color: Colors.white),
+                    cursorColor: AppColors.primaryColor,
+                    style: const TextStyle(color: AppColors.mainTextColor),
                   ),
                 ),
               ),
