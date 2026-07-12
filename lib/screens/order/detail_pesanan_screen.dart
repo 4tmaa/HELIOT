@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -286,6 +287,48 @@ class DetailPesananScreen extends StatelessWidget {
     );
   }
 
+  Map<String, dynamic>? _parseSpec(dynamic specData) {
+    if (specData == null || specData == '-' || specData == 'Tidak Ditentukan') return null;
+    if (specData is Map<String, dynamic>) return specData;
+    if (specData is String) {
+      if (specData.trim().startsWith('{')) {
+        try {
+          return jsonDecode(specData);
+        } catch (_) {}
+      }
+      return {'name': specData, 'base_price': 0};
+    }
+    return null;
+  }
+
+  Widget _buildCostRow(String label, dynamic amount, {bool isSubtotal = false}) {
+    if (amount == null || amount == 0) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: isSubtotal ? Colors.grey.shade800 : Colors.grey.shade600,
+              fontSize: isSubtotal ? 14 : 13,
+              fontWeight: isSubtotal ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          Text(
+            _formatCurrency(amount),
+            style: TextStyle(
+              color: isSubtotal ? Colors.grey.shade800 : Colors.grey.shade600,
+              fontSize: isSubtotal ? 14 : 13,
+              fontWeight: isSubtotal ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(orderData['status'] ?? '');
@@ -294,6 +337,34 @@ class DetailPesananScreen extends StatelessWidget {
         orderData['admin_notes'].toString().trim().isNotEmpty;
     final bool hasFinalPrice =
         orderData['final_price'] != null && orderData['final_price'] > 0;
+
+    int _mcuCost = 0;
+    if (orderData['mcu_list'] is List) {
+      for (var item in orderData['mcu_list']) {
+        _mcuCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
+      }
+    }
+
+    int _sensorCost = 0;
+    if (orderData['sensor_list'] is List) {
+      for (var item in orderData['sensor_list']) {
+        _sensorCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
+      }
+    }
+
+    final connSpec = _parseSpec(orderData['connectivity']);
+    final outSpec = _parseSpec(orderData['output_platform']);
+    final pwrSpec = _parseSpec(orderData['power_supply']);
+    final encSpec = _parseSpec(orderData['enclosure']);
+
+    int _connCost = (connSpec?['base_price'] as num?)?.toInt() ?? 0;
+    int _outCost = (outSpec?['base_price'] as num?)?.toInt() ?? 0;
+    int _pwrCost = (pwrSpec?['base_price'] as num?)?.toInt() ?? 0;
+    int _encCost = (encSpec?['base_price'] as num?)?.toInt() ?? 0;
+
+    int _identifiedComponentCost = _mcuCost + _sensorCost + _connCost + _outCost + _pwrCost + _encCost;
+    int _actualComponentCost = ((orderData['estimated_price'] as num?)?.toInt() ?? 0) - ((orderData['service_fee'] as num?)?.toInt() ?? 0);
+    int _unexplainedCost = _actualComponentCost - _identifiedComponentCost;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -441,25 +512,14 @@ class DetailPesananScreen extends StatelessWidget {
                   _buildSectionHeader('Spesifikasi Proyek', Icons.memory),
                   Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
-                  _buildDataRow(
-                    'Nama Proyek',
-                    orderData['project_title'] ?? '-',
-                  ),
+                  _buildDataRow('Nama Proyek', orderData['project_title'] ?? '-'),
                   _buildComponentList('Mikrokontroler', orderData['mcu_list']),
                   _buildComponentList('Sensor', orderData['sensor_list']),
-                  _buildDataRow(
-                    'Konektivitas',
-                    orderData['connectivity'] ?? '-',
-                  ),
-                  _buildDataRow(
-                    'Platform Output',
-                    orderData['output_platform'] ?? '-',
-                  ),
-                  _buildDataRow(
-                    'Sumber Daya',
-                    orderData['power_supply'] ?? '-',
-                  ),
-                  _buildDataRow('Bentuk Fisik', orderData['enclosure'] ?? '-'),
+                  
+                  _buildDataRow('Konektivitas', _parseSpec(orderData['connectivity'])?['name'] ?? '-'),
+                  _buildDataRow('Platform Output', _parseSpec(orderData['output_platform'])?['name'] ?? '-'),
+                  _buildDataRow('Sumber Daya', _parseSpec(orderData['power_supply'])?['name'] ?? '-'),
+                  _buildDataRow('Bentuk Fisik', _parseSpec(orderData['enclosure'])?['name'] ?? '-'),
 
                   const SizedBox(height: 16),
                   Text(
@@ -503,14 +563,21 @@ class DetailPesananScreen extends StatelessWidget {
                   Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
                   
-                  _buildDataRow(
-                    'Total Komponen',
-                    _formatCurrency((orderData['estimated_price'] ?? 0) - (orderData['service_fee'] ?? 0))
+                  _buildCostRow('Mikrokontroler', _mcuCost),
+                  _buildCostRow('Sensor & Aktuator', _sensorCost),
+                  _buildCostRow('Konektivitas', _connCost),
+                  _buildCostRow('Platform Output', _outCost),
+                  _buildCostRow('Sumber Daya', _pwrCost),
+                  _buildCostRow('Bentuk Fisik', _encCost),
+                  if (_unexplainedCost > 0)
+                    _buildCostRow('Spesifikasi Lainnya', _unexplainedCost),
+                  
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Divider(color: Color(0xFFEEEEEE), thickness: 1, height: 1),
                   ),
-                  _buildDataRow(
-                    'Jasa Perakitan',
-                    _formatCurrency(orderData['service_fee'])
-                  ),
+
+                  _buildCostRow('Jasa Perakitan', orderData['service_fee'], isSubtotal: false),
                   
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
