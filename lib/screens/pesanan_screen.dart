@@ -15,78 +15,154 @@ class _PesananScreenState extends State<PesananScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        children: [
-          const SizedBox(height: 16),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceColor,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 120.0,
+            floating: true,
+            pinned: true,
+            backgroundColor: AppColors.backgroundColor,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 24, bottom: 16),
+              title: const Text(
+                'Pesanan Saya',
+                style: TextStyle(
+                  color: AppColors.mainTextColor,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 24,
+                  letterSpacing: -0.5,
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedIndex = 0),
+              ),
+              background: Stack(
+                children: [
+                  Positioned(
+                    top: -50,
+                    right: -50,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      width: 150,
+                      height: 150,
                       decoration: BoxDecoration(
-                        color: _selectedIndex == 0 ? AppColors.primaryColor : Colors.transparent,
-                        borderRadius: BorderRadius.circular(26),
-                      ),
-                      child: Text(
-                        'Buat Proyek',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: _selectedIndex == 0 ? Colors.white : AppColors.secondaryTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
+                        shape: BoxShape.circle,
+                        color: AppColors.primaryColor.withValues(alpha: 0.1),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedIndex = 1),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _selectedIndex == 1 ? AppColors.primaryColor : Colors.transparent,
-                        borderRadius: BorderRadius.circular(26),
-                      ),
-                      child: Text(
-                        'Riwayat',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: _selectedIndex == 1 ? Colors.white : AppColors.secondaryTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          Expanded(
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedIndex = 0),
+                        behavior: HitTestBehavior.opaque,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOutQuint,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: _selectedIndex == 0 ? AppColors.primaryColor : Colors.transparent,
+                            borderRadius: BorderRadius.circular(26),
+                            boxShadow: _selectedIndex == 0 ? [
+                              BoxShadow(
+                                color: AppColors.primaryColor.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              )
+                            ] : [],
+                          ),
+                          child: Text(
+                            'Buat Proyek',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: _selectedIndex == 0 ? Colors.white : AppColors.secondaryTextColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedIndex = 1),
+                        behavior: HitTestBehavior.opaque,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOutQuint,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: _selectedIndex == 1 ? AppColors.primaryColor : Colors.transparent,
+                            borderRadius: BorderRadius.circular(26),
+                            boxShadow: _selectedIndex == 1 ? [
+                              BoxShadow(
+                                color: AppColors.primaryColor.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              )
+                            ] : [],
+                          ),
+                          child: Text(
+                            'Riwayat',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: _selectedIndex == 1 ? Colors.white : AppColors.secondaryTextColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SliverFillRemaining(
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 400),
+              switchInCurve: Curves.easeOutQuint,
+              switchOutCurve: Curves.easeInQuint,
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.05, 0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  ),
+                );
+              },
               child: _selectedIndex == 0 
-                  ? BuatProyekTab(onProjectSubmitted: () => setState(() => _selectedIndex = 1)) 
-                  : const RiwayatPesananTab(),
+                  ? BuatProyekTab(
+                      key: const ValueKey('buat_proyek'),
+                      onProjectSubmitted: () => setState(() => _selectedIndex = 1)
+                    ) 
+                  : const RiwayatPesananTab(key: ValueKey('riwayat')),
             ),
           ),
         ],
