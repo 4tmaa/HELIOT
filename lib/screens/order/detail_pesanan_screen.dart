@@ -44,7 +44,7 @@ class DetailPesananScreen extends StatelessWidget {
         children: [
           Icon(icon, color: AppColors.primaryColor, size: 20),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(color: AppColors.mainTextColor, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(title, style: const TextStyle(color: AppColors.primaryColor, fontSize: 16, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -58,10 +58,10 @@ class DetailPesananScreen extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
+            child: Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
           ),
           Expanded(
-            child: Text(value, style: const TextStyle(color: AppColors.mainTextColor, fontSize: 14, fontWeight: FontWeight.w500)),
+            child: Text(value, style: TextStyle(color: Colors.grey.shade800, fontSize: 14, fontWeight: FontWeight.w500)),
           ),
         ],
       ),
@@ -89,10 +89,10 @@ class DetailPesananScreen extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
+            child: Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
           ),
           Expanded(
-            child: Text(formattedText.trim(), style: const TextStyle(color: AppColors.mainTextColor, fontSize: 14, fontWeight: FontWeight.w500)),
+            child: Text(formattedText.trim(), style: TextStyle(color: Colors.grey.shade800, fontSize: 14, fontWeight: FontWeight.w500)),
           ),
         ],
       ),
@@ -106,13 +106,14 @@ class DetailPesananScreen extends StatelessWidget {
     final bool hasFinalPrice = orderData['final_price'] != null && orderData['final_price'] > 0;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: AppColors.mainTextColor),
-        title: const Text('Detail Pesanan', style: TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: AppColors.primaryColor),
+        title: const Text('Detail Pesanan', style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -123,15 +124,15 @@ class DetailPesananScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: statusColor.withOpacity(0.3)),
+                color: statusColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: statusColor.withValues(alpha: 0.3)),
               ),
               child: Column(
                 children: [
                   Text(orderData['status'] ?? 'Menunggu Konfirmasi', style: TextStyle(color: statusColor, fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text('Tanggal Pengajuan: ${_formatDate(orderData['created_at'])}', style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 12)),
+                  Text('Tanggal Pengajuan: ${_formatDate(orderData['created_at'])}', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
                 ],
               ),
             ),
@@ -143,7 +144,7 @@ class DetailPesananScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.orange.shade200),
                 ),
                 child: Column(
@@ -157,7 +158,7 @@ class DetailPesananScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(orderData['admin_notes'], style: const TextStyle(color: AppColors.mainTextColor, fontSize: 14, height: 1.5)),
+                    Text(orderData['admin_notes'], style: TextStyle(color: Colors.grey.shade800, fontSize: 14, height: 1.5)),
                   ],
                 ),
               ),
@@ -167,12 +168,16 @@ class DetailPesananScreen extends StatelessWidget {
             
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: AppColors.surfaceColor, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300, width: 1.5),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSectionHeader('Identitas Pemesan', Icons.person_outline),
-                  const Divider(color: Color(0xFFEEEEEE)),
+                  Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
                   _buildDataRow('Nama Lengkap', orderData['customer_name'] ?? '-'),
                   _buildDataRow('No. Telepon', orderData['customer_phone'] ?? '-'),
@@ -184,12 +189,16 @@ class DetailPesananScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: AppColors.surfaceColor, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300, width: 1.5),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSectionHeader('Spesifikasi Proyek', Icons.memory),
-                  const Divider(color: Color(0xFFEEEEEE)),
+                  Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
                   _buildDataRow('Nama Proyek', orderData['project_title'] ?? '-'),
                   _buildComponentList('Mikrokontroler', orderData['mcu_list']),
@@ -200,13 +209,17 @@ class DetailPesananScreen extends StatelessWidget {
                   _buildDataRow('Bentuk Fisik', orderData['enclosure'] ?? '-'),
                   
                   const SizedBox(height: 16),
-                  const Text('Deskripsi Cara Kerja:', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
+                  Text('Deskripsi Cara Kerja:', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
                   const SizedBox(height: 8),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: AppColors.backgroundColor, borderRadius: BorderRadius.circular(8)),
-                    child: Text(orderData['description'] ?? '-', style: const TextStyle(color: AppColors.mainTextColor, fontSize: 13, height: 1.5)),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Text(orderData['description'] ?? '-', style: TextStyle(color: Colors.grey.shade800, fontSize: 13, height: 1.5)),
                   ),
                 ],
               ),
@@ -216,25 +229,25 @@ class DetailPesananScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: hasFinalPrice ? AppColors.primaryColor : AppColors.surfaceColor,
-                borderRadius: BorderRadius.circular(16), 
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))]
+                color: hasFinalPrice ? AppColors.primaryColor : Colors.white,
+                borderRadius: BorderRadius.circular(12), 
+                border: hasFinalPrice ? null : Border.all(color: Colors.grey.shade300, width: 1.5),
               ),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Estimasi Awal', style: TextStyle(color: hasFinalPrice ? Colors.white70 : AppColors.secondaryTextColor, fontSize: 14)),
-                      Text(_formatCurrency(orderData['estimated_price']), style: TextStyle(color: hasFinalPrice ? Colors.white70 : AppColors.mainTextColor, fontSize: 14, decoration: hasFinalPrice ? TextDecoration.lineThrough : null)),
+                      Text('Estimasi Awal', style: TextStyle(color: hasFinalPrice ? Colors.white70 : Colors.grey.shade600, fontSize: 14)),
+                      Text(_formatCurrency(orderData['estimated_price']), style: TextStyle(color: hasFinalPrice ? Colors.white70 : Colors.grey.shade800, fontSize: 14, decoration: hasFinalPrice ? TextDecoration.lineThrough : null)),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Harga Final', style: TextStyle(color: hasFinalPrice ? Colors.white : AppColors.mainTextColor, fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text(hasFinalPrice ? _formatCurrency(orderData['final_price']) : 'Menunggu Admin', style: TextStyle(color: hasFinalPrice ? Colors.white : AppColors.primaryColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text('Harga Final', style: TextStyle(color: hasFinalPrice ? Colors.white : Colors.grey.shade800, fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(hasFinalPrice ? _formatCurrency(orderData['final_price']) : 'Menunggu Admin', style: TextStyle(color: hasFinalPrice ? Colors.white : Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
