@@ -152,9 +152,8 @@ class _KatalogScreenState extends State<KatalogScreen> {
               child: Container(
                 height: 55,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.primaryColor,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: AppColors.primaryColor, width: 1.5),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -172,19 +171,19 @@ class _KatalogScreenState extends State<KatalogScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: 'Cari komponen...',
-                            hintStyle: TextStyle(
-                              color: Colors.grey.shade400,
+                            hintStyle: const TextStyle(
+                              color: Colors.white70,
                               fontSize: 14,
                             ),
                             border: InputBorder.none,
                             prefixIcon: const Icon(
                               Icons.search,
-                              color: AppColors.primaryColor,
+                              color: Colors.white,
                             ),
                             suffixIcon: PopupMenuButton<int>(
                               icon: const Icon(
                                 Icons.tune,
-                                color: AppColors.primaryColor,
+                                color: Colors.white,
                               ),
                               onSelected: (int index) {
                                 setState(() {
@@ -216,8 +215,9 @@ class _KatalogScreenState extends State<KatalogScreen> {
                               vertical: 18,
                             ),
                           ),
+                          cursorColor: Colors.white,
                           style: const TextStyle(
-                            color: AppColors.mainTextColor,
+                            color: Colors.white,
                           ),
                         ),
               ),
