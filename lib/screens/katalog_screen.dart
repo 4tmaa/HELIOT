@@ -130,7 +130,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
               child: Row(
                 children: [
                   const Text(
-                    'Katalog',
+                    'Katalog Komponen',
                     style: TextStyle(
                       color: AppColors.mainTextColor,
                       fontWeight: FontWeight.w900,
