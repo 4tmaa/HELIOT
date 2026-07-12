@@ -8,6 +8,7 @@ import 'utils/app_colors.dart';
 import 'screens/main_navigation.dart';
 import 'screens/login_screen.dart';
 import 'services/push_notification_service.dart';
+import 'services/cart_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,8 @@ Future<void> main() async {
     url: dotenv.env['supabaseUrl']!,
     anonKey: dotenv.env['supabaseAnonKey']!,
   );
+
+  await CartService.instance.loadCart();
 
   runApp(const SmartLedApp());
 }

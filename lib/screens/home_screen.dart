@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../utils/app_colors.dart';
+import '../widgets/custom_toast.dart';
 import '../widgets/custom_loading.dart';
+import '../services/local_db_service.dart';
 import 'home/kategori_detail_screen.dart';
 import 'home/notifikasi_screen.dart';
 import 'catalog/detail_template_screen.dart';
@@ -76,7 +78,19 @@ class _BerandaScreenState extends State<BerandaScreen> {
 
   Future<void> fetchBannerData() async {
     try {
+      final cached = await LocalDatabaseService.instance.getCachedData('banners');
+      if (cached != null && mounted) {
+        setState(() {
+          bannerList = List<dynamic>.from(cached);
+          isLoadingBanners = false;
+        });
+        return;
+      }
+
       final responseData = await supabaseClient.from('banners').select().eq('is_active', true).order('created_at', ascending: false);
+      
+      await LocalDatabaseService.instance.saveToCache('banners', responseData);
+      
       if (mounted) {
         setState(() {
           bannerList = responseData;
@@ -90,7 +104,19 @@ class _BerandaScreenState extends State<BerandaScreen> {
 
   Future<void> fetchTemplateData() async {
     try {
+      final cached = await LocalDatabaseService.instance.getCachedData('templates_home');
+      if (cached != null && mounted) {
+        setState(() {
+          templateList = List<dynamic>.from(cached);
+          isLoadingTemplates = false;
+        });
+        return;
+      }
+
       final responseData = await supabaseClient.from('templates').select().limit(5);
+      
+      await LocalDatabaseService.instance.saveToCache('templates_home', responseData);
+
       if (mounted) {
         setState(() {
           templateList = responseData;

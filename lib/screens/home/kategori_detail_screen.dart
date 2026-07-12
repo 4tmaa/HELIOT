@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/app_colors.dart';
 import '../../widgets/custom_loading.dart';
+import '../../services/local_db_service.dart';
 
 class KategoriDetailScreen extends StatefulWidget {
   final String categoryName;
@@ -24,6 +25,17 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
 
   Future<void> fetchItemsByCategory() async {
     try {
+      final cacheKey = 'kategori_${widget.categoryName}';
+      final cached = await LocalDatabaseService.instance.getCachedData(cacheKey);
+      
+      if (cached != null && mounted) {
+        setState(() {
+          categoryItems = List<dynamic>.from(cached);
+          isLoadingData = false;
+        });
+        return;
+      }
+
       final supabase = Supabase.instance.client;
       List<dynamic> responseData;
 
@@ -32,8 +44,11 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
       } else {
         responseData = await supabase.from('templates').select().eq('category', widget.categoryName);
       }
+      
+      await LocalDatabaseService.instance.saveToCache(cacheKey, responseData);
 
-      setState(() {
+      if (mounted) {
+        setState(() {
         categoryItems = responseData;
         isLoadingData = false;
       });

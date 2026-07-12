@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:heliot/utils/app_colors.dart';
 import 'package:heliot/services/cart_service.dart';
+import '../../services/local_db_service.dart';
 import 'package:heliot/widgets/custom_toast.dart';
 import 'package:heliot/screens/profile/edit_profil_screen.dart';
 import 'package:heliot/screens/profile/alamat_pengiriman_screen.dart';
@@ -65,9 +66,20 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
   }
 
   Future<void> _fetchAllOptions() async {
+    // Helper function to handle caching
+    Future<dynamic> _fetchWithCache(String cacheKey, Future<dynamic> Function() fetchCallback) async {
+      final cached = await LocalDatabaseService.instance.getCachedData(cacheKey);
+      if (cached != null) return cached;
+      final result = await fetchCallback();
+      if (result != null) {
+        await LocalDatabaseService.instance.saveToCache(cacheKey, result);
+      }
+      return result;
+    }
+
     try {
-      final compRes = await supabaseClient.from('components').select('name, category, base_price, difficulty_score');
-      if (mounted) {
+      final compRes = await _fetchWithCache('components_proyek', () => supabaseClient.from('components').select('name, category, base_price, difficulty_score'));
+      if (compRes != null && mounted) {
         setState(() {
           _mcuList = List<Map<String, dynamic>>.from(compRes.where((e) => e['category'] == 'Mikrokontroler'));
           _sensorList = List<Map<String, dynamic>>.from(compRes.where((e) => e['category'] == 'Sensor'));
@@ -78,15 +90,15 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final connRes = await supabaseClient.from('connectivity_options').select('name, base_price');
-      if (mounted) setState(() => _connectivityList = List<Map<String, dynamic>>.from(connRes));
+      final connRes = await _fetchWithCache('connectivity_options', () => supabaseClient.from('connectivity_options').select('name, base_price'));
+      if (connRes != null && mounted) setState(() => _connectivityList = List<Map<String, dynamic>>.from(connRes));
     } catch (e) {
       debugPrint('Gagal memuat konektivitas');
     }
 
     try {
-      final enclRes = await supabaseClient.from('enclosure_options').select('name, base_price');
-      if (mounted) {
+      final enclRes = await _fetchWithCache('enclosure_options', () => supabaseClient.from('enclosure_options').select('name, base_price'));
+      if (enclRes != null && mounted) {
         setState(() {
           _enclosureList = List<Map<String, dynamic>>.from((enclRes as List).map((e) => {
             ...(e as Map<String, dynamic>),
@@ -101,8 +113,8 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final outRes = await supabaseClient.from('output_options').select('name, base_price, difficulty_score');
-      if (mounted) {
+      final outRes = await _fetchWithCache('output_options', () => supabaseClient.from('output_options').select('name, base_price, difficulty_score'));
+      if (outRes != null && mounted) {
         setState(() {
           _outputList = List<Map<String, dynamic>>.from((outRes as List).map((e) {
             final map = e as Map<String, dynamic>;
@@ -122,8 +134,8 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final pwrRes = await supabaseClient.from('power_options').select('name, base_price, difficulty_score');
-      if (mounted) {
+      final pwrRes = await _fetchWithCache('power_options', () => supabaseClient.from('power_options').select('name, base_price, difficulty_score'));
+      if (pwrRes != null && mounted) {
         setState(() {
           _powerList = List<Map<String, dynamic>>.from((pwrRes as List).map((e) {
             final map = e as Map<String, dynamic>;
@@ -143,7 +155,7 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final settingsRes = await supabaseClient.from('pricing_settings').select('base_service_fee, difficulty_multiplier').maybeSingle();
+      final settingsRes = await _fetchWithCache('pricing_settings', () => supabaseClient.from('pricing_settings').select('base_service_fee, difficulty_multiplier').maybeSingle());
       if (settingsRes != null && mounted) {
         setState(() {
           _baseServiceFee = (settingsRes['base_service_fee'] as num?)?.toInt() ?? 25000;

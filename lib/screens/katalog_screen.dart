@@ -6,6 +6,7 @@ import '../widgets/catalog/featured_component_card.dart';
 import '../widgets/catalog/grid_component_card.dart';
 import '../widgets/custom_loading.dart';
 import '../widgets/custom_toast.dart';
+import '../services/local_db_service.dart';
 
 class KatalogScreen extends StatefulWidget {
   const KatalogScreen({super.key});
@@ -37,10 +38,21 @@ class _KatalogScreenState extends State<KatalogScreen> {
 
   Future<void> fetchComponentData() async {
     try {
+      final cached = await LocalDatabaseService.instance.getCachedData('components');
+      if (cached != null && mounted) {
+        setState(() {
+          componentList = List<dynamic>.from(cached);
+          isLoading = false;
+        });
+        return;
+      }
+
       final responseData = await Supabase.instance.client
           .from('components')
           .select()
           .order('name');
+          
+      await LocalDatabaseService.instance.saveToCache('components', responseData);
       if (mounted) {
         setState(() {
           componentList = responseData;
