@@ -79,7 +79,13 @@ class _DetailTemplateScreenState extends State<DetailTemplateScreen> {
       setState(() {
         _isLoading = false;
       });
+      CartService.instance.setProjectIdentity(
+        widget.template['title'] ?? 'Proyek Baru',
+        widget.template['description'] ?? '',
+      );
+
       CustomToast.show(context, message: 'Berhasil memasukkan ${_components.length} jenis komponen ke pesanan!', type: ToastType.success);
+
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

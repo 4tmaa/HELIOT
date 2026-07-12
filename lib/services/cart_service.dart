@@ -8,6 +8,9 @@ class CartService {
   final ValueNotifier<List<Map<String, dynamic>>> selectedMCUs = ValueNotifier([]);
   final ValueNotifier<List<Map<String, dynamic>>> selectedSensors = ValueNotifier([]);
 
+  String? initialProjectTitle;
+  String? initialProjectDescription;
+
   Future<void> loadCart() async {
     final mcuCache = await LocalDatabaseService.instance.getCachedData('cart_mcus', maxAge: const Duration(days: 30));
     final sensorCache = await LocalDatabaseService.instance.getCachedData('cart_sensors', maxAge: const Duration(days: 30));
@@ -55,9 +58,16 @@ class CartService {
     }
   }
 
+  void setProjectIdentity(String title, String description) {
+    initialProjectTitle = title;
+    initialProjectDescription = description;
+  }
+
   void clearCart() {
     selectedMCUs.value = [];
     selectedSensors.value = [];
+    initialProjectTitle = null;
+    initialProjectDescription = null;
     _saveCart();
   }
 }

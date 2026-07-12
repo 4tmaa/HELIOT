@@ -47,6 +47,13 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
   @override
   void initState() {
     super.initState();
+    if (CartService.instance.initialProjectTitle != null) {
+      _titleController.text = CartService.instance.initialProjectTitle!;
+    }
+    if (CartService.instance.initialProjectDescription != null) {
+      _descriptionController.text = CartService.instance.initialProjectDescription!;
+    }
+    
     _fetchAllOptions();
     CartService.instance.selectedMCUs.addListener(_onCartChanged);
     CartService.instance.selectedSensors.addListener(_onCartChanged);
