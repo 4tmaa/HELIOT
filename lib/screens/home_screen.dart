@@ -237,15 +237,10 @@ class _BerandaScreenState extends State<BerandaScreen> {
       backgroundColor: AppColors.backgroundColor,
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            expandedHeight: 110.0,
-            toolbarHeight: 90.0,
-            floating: false,
-            pinned: false,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            flexibleSpace: FlexibleSpaceBar(
-              background: ClipRRect(
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 110.0 + MediaQuery.of(context).padding.top,
+              child: ClipRRect(
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(40),
                   bottomRight: Radius.circular(40),
@@ -255,13 +250,14 @@ class _BerandaScreenState extends State<BerandaScreen> {
                     Positioned.fill(
                       child: CustomPaint(painter: HomeHeaderPainter()),
                     ),
-                    Positioned(
-                      left: 24,
-                      right: 24,
-                      bottom: 20,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                    SafeArea(
+                      bottom: false,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
+                        alignment: Alignment.bottomCenter,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.end,

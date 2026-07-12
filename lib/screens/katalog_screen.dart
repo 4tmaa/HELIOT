@@ -210,32 +210,9 @@ class _KatalogScreenState extends State<KatalogScreen> {
                         fontSize: 14,
                       ),
                       border: InputBorder.none,
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.7),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: const Icon(Icons.search, color: Colors.white, size: 18),
-                        ),
-                      ),
+                      prefixIcon: const Icon(Icons.search, color: Colors.white),
                       suffixIcon: PopupMenuButton<int>(
-                        icon: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.7),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: const Icon(Icons.tune, color: Colors.white, size: 18),
-                        ),
+                        icon: const Icon(Icons.tune, color: Colors.white),
                         onSelected: (int index) {
                           setState(() {
                             _selectedIndex = index;
