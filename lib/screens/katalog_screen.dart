@@ -4,6 +4,8 @@ import '../utils/app_colors.dart';
 import '../widgets/catalog/header_wave_painter.dart';
 import '../widgets/catalog/featured_component_card.dart';
 import '../widgets/catalog/grid_component_card.dart';
+import '../widgets/custom_loading.dart';
+import '../widgets/custom_toast.dart';
 
 class KatalogScreen extends StatefulWidget {
   const KatalogScreen({super.key});
@@ -41,12 +43,14 @@ class _KatalogScreenState extends State<KatalogScreen> {
           componentList = responseData;
           isLoading = false;
         });
+        CustomToast.show(context, message: 'Berhasil memuat katalog', type: ToastType.success);
       }
     } catch (error) {
       if (mounted) {
         setState(() {
           isLoading = false;
         });
+        CustomToast.show(context, message: 'Gagal memuat katalog', type: ToastType.error);
       }
     }
   }
@@ -146,7 +150,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
             ),
             Expanded(
               child: isLoading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor))
+                  ? _buildShimmerLoading()
                   : AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
                       child: _buildBookCatalog(filteredList, ValueKey<String>('${_selectedIndex}_$_searchQuery')),
@@ -185,6 +189,34 @@ class _KatalogScreenState extends State<KatalogScreen> {
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return CustomScrollView(
+      slivers: [
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: CustomShimmerCard(height: 220, borderRadius: 24),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.62,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => const CustomShimmerCard(borderRadius: 20),
+              childCount: 4,
+            ),
+          ),
+        ),
       ],
     );
   }
