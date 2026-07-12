@@ -81,24 +81,16 @@ class DetailTemplateScreen extends StatelessWidget {
                         style: const TextStyle(color: AppColors.mainTextColor, fontSize: 26, fontWeight: FontWeight.bold, height: 1.2),
                       ),
                       const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFF0F0F0)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Estimasi Harga', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
-                            const SizedBox(height: 4),
-                            Text(
-                              _formatCurrency(estimatedPrice),
-                              style: const TextStyle(color: AppColors.primaryColor, fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Estimasi Harga', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
+                          const SizedBox(height: 4),
+                          Text(
+                            _formatCurrency(estimatedPrice),
+                            style: const TextStyle(color: AppColors.primaryColor, fontSize: 22, fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 32),
                       const Text(

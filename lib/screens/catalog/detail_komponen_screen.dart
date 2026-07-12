@@ -96,47 +96,39 @@ class DetailKomponenScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFF0F0F0)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Harga Dasar', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _formatCurrency(basePrice),
-                                  style: const TextStyle(color: AppColors.primaryColor, fontSize: 22, fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            Container(width: 1, height: 40, color: const Color(0xFFF0F0F0)),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Text('Kesulitan', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: List.generate(
-                                    5,
-                                    (index) => Icon(
-                                      index < difficulty ? Icons.star_rounded : Icons.star_outline_rounded,
-                                      color: Colors.orange,
-                                      size: 18,
-                                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Harga Dasar', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatCurrency(basePrice),
+                                style: const TextStyle(color: AppColors.primaryColor, fontSize: 22, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          Container(width: 1, height: 40, color: const Color(0xFFF0F0F0)),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Text('Kesulitan', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13)),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: List.generate(
+                                  5,
+                                  (index) => Icon(
+                                    index < difficulty ? Icons.star_rounded : Icons.star_outline_rounded,
+                                    color: Colors.orange,
+                                    size: 18,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 32),
                       const Text(
