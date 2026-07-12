@@ -18,6 +18,9 @@ class PushNotificationService {
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       final String? token = await _fcm.getToken();
       if (token != null) {
+        print('====================================');
+        print('FCM TOKEN ANDA: $token');
+        print('====================================');
         await _saveTokenToDatabase(token);
       }
 

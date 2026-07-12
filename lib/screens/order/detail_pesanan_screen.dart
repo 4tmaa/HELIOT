@@ -2,12 +2,140 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../utils/app_colors.dart';
 
-class DetailPesananScreen extends StatelessWidget {
+class DetailPesananScreen extends StatefulWidget {
   final Map<String, dynamic> orderData;
 
   const DetailPesananScreen({super.key, required this.orderData});
+
+  @override
+  State<DetailPesananScreen> createState() => _DetailPesananScreenState();
+}
+
+class _DetailPesananScreenState extends State<DetailPesananScreen> with WidgetsBindingObserver {
+  late Map<String, dynamic> _currentOrderData;
+  RealtimeChannel? _realtimeChannel;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _currentOrderData = Map<String, dynamic>.from(widget.orderData);
+    _setupRealtimeSubscription();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPaymentStatus();
+    }
+  }
+
+  Future<void> _checkPaymentStatus() async {
+    try {
+      final response = await Supabase.instance.client
+          .from('orders')
+          .select('status')
+          .eq('id', _currentOrderData['id'])
+          .maybeSingle();
+
+      if (response != null && response['status'] != null) {
+        final newStatus = response['status'];
+        if (newStatus != _currentOrderData['status']) {
+          if (mounted) {
+            setState(() {
+              _currentOrderData['status'] = newStatus;
+            });
+            if (newStatus == 'DIPROSES') {
+              _showPaymentSuccessDialog();
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error polling status: $e');
+    }
+  }
+
+  void _setupRealtimeSubscription() {
+    final orderId = _currentOrderData['id'];
+    _realtimeChannel = Supabase.instance.client
+        .channel('public:orders:id=$orderId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'orders',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: orderId,
+          ),
+          callback: (payload) {
+            final newRecord = payload.newRecord;
+            if (newRecord['status'] != _currentOrderData['status']) {
+              if (mounted) {
+                setState(() {
+                  _currentOrderData['status'] = newRecord['status'];
+                  // Anda juga bisa mengupdate field lain jika diperlukan
+                });
+                
+                // Jika status berubah menjadi DIPROSES (Artinya pembayaran berhasil)
+                if (newRecord['status'] == 'DIPROSES') {
+                  _showPaymentSuccessDialog();
+                }
+              }
+            }
+          },
+        )
+        .subscribe();
+  }
+
+  void _showPaymentSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Column(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 60),
+            SizedBox(height: 16),
+            Text('Pembayaran Berhasil!', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: const Text(
+          'Terima kasih! Pembayaran Anda telah kami terima dan proyek Anda akan segera kami proses.',
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Tutup dialog
+                Navigator.pop(context); // Kembali ke riwayat pesanan agar refresh
+              },
+              child: const Text('Kembali ke Riwayat Pesanan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _realtimeChannel?.unsubscribe();
+    super.dispose();
+  }
 
   String _formatDate(String isoString) {
     try {
@@ -159,7 +287,7 @@ class DetailPesananScreen extends StatelessWidget {
               const Text('Konfirmasi Pembayaran', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.mainTextColor)),
               const SizedBox(height: 8),
               Text(
-                'Total tagihan Anda adalah ${_formatCurrency(orderData['final_price'])}.\nSelesaikan pembayaran agar proyek dapat diproses.', 
+                'Total tagihan Anda adalah ${_formatCurrency(_currentOrderData['final_price'])}.\nSelesaikan pembayaran agar proyek dapat diproses.', 
                 textAlign: TextAlign.center, 
                 style: TextStyle(color: Colors.grey.shade600, height: 1.5)
               ),
@@ -169,16 +297,48 @@ class DetailPesananScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     try {
-                      await Supabase.instance.client
-                          .from('orders')
-                          .update({'status': 'Proses'})
-                          .eq('id', orderData['id']);
-                      if (context.mounted) {
-                        Navigator.pop(context); // close modal
-                        Navigator.pop(context); // go back to riwayat pesanan
+                      // Tampilkan loading dialog
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(child: CircularProgressIndicator()),
+                      );
+
+                      // Panggil Edge Function Midtrans
+                      final response = await Supabase.instance.client.functions.invoke(
+                        'create_midtrans_transaction',
+                        body: {'order_id': _currentOrderData['id']},
+                      );
+
+                      // Tutup loading dialog
+                      if (context.mounted) Navigator.pop(context);
+
+                      if (response.status == 200) {
+                        final data = response.data;
+                        if (data['success'] == true && data['redirect_url'] != null) {
+                          final Uri url = Uri.parse(data['redirect_url']);
+                          try {
+                            // Tutup modal konfirmasi
+                            if (context.mounted) Navigator.pop(context);
+                            // Buka browser utama HP (disarankan untuk payment gateway agar deep-link e-wallet berfungsi)
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          } catch (e) {
+                            throw Exception('Could not launch payment URL: $e');
+                          }
+                        } else {
+                          throw Exception(data['error'] ?? 'Unknown error from server');
+                        }
+                      } else {
+                        throw Exception('Failed to connect to payment server');
                       }
                     } catch (e) {
-                      debugPrint('Error updating status: $e');
+                      if (context.mounted) {
+                        Navigator.pop(context); // close modal if still open
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Gagal memproses pembayaran: $e')),
+                        );
+                      }
+                      debugPrint('Error payment: $e');
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -226,7 +386,7 @@ class DetailPesananScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               try {
-                await Supabase.instance.client.from('orders').delete().eq('id', orderData['id']);
+                await Supabase.instance.client.from('orders').delete().eq('id', _currentOrderData['id']);
                 if (context.mounted) {
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -267,7 +427,7 @@ class DetailPesananScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               try {
-                await Supabase.instance.client.from('orders').update({'status': 'Dibatalkan'}).eq('id', orderData['id']);
+                await Supabase.instance.client.from('orders').update({'status': 'Dibatalkan'}).eq('id', _currentOrderData['id']);
                 if (context.mounted) {
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -349,31 +509,31 @@ class DetailPesananScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _getStatusColor(orderData['status'] ?? '');
+    final statusColor = _getStatusColor(_currentOrderData['status'] ?? '');
     final bool hasAdminNotes =
-        orderData['admin_notes'] != null &&
-        orderData['admin_notes'].toString().trim().isNotEmpty;
+        _currentOrderData['admin_notes'] != null &&
+        _currentOrderData['admin_notes'].toString().trim().isNotEmpty;
     final bool hasFinalPrice =
-        orderData['final_price'] != null && orderData['final_price'] > 0;
+        _currentOrderData['final_price'] != null && _currentOrderData['final_price'] > 0;
 
     int mcuCost = 0;
-    if (orderData['mcu_list'] is List) {
-      for (var item in orderData['mcu_list']) {
+    if (_currentOrderData['mcu_list'] is List) {
+      for (var item in _currentOrderData['mcu_list']) {
         mcuCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
       }
     }
 
     int sensorCost = 0;
-    if (orderData['sensor_list'] is List) {
-      for (var item in orderData['sensor_list']) {
+    if (_currentOrderData['sensor_list'] is List) {
+      for (var item in _currentOrderData['sensor_list']) {
         sensorCost += ((item['base_price'] as num?)?.toInt() ?? 0) * ((item['qty'] as num?)?.toInt() ?? 1);
       }
     }
 
-    final connSpec = _parseSpec(orderData['connectivity']);
-    final outSpec = _parseSpec(orderData['output_platform']);
-    final pwrSpec = _parseSpec(orderData['power_supply']);
-    final encSpec = _parseSpec(orderData['enclosure']);
+    final connSpec = _parseSpec(_currentOrderData['connectivity']);
+    final outSpec = _parseSpec(_currentOrderData['output_platform']);
+    final pwrSpec = _parseSpec(_currentOrderData['power_supply']);
+    final encSpec = _parseSpec(_currentOrderData['enclosure']);
 
     int connCost = (connSpec?['base_price'] as num?)?.toInt() ?? 0;
     int outCost = (outSpec?['base_price'] as num?)?.toInt() ?? 0;
@@ -381,7 +541,7 @@ class DetailPesananScreen extends StatelessWidget {
     int encCost = (encSpec?['base_price'] as num?)?.toInt() ?? 0;
 
     int identifiedComponentCost = mcuCost + sensorCost + connCost + outCost + pwrCost + encCost;
-    int actualComponentCost = ((orderData['estimated_price'] as num?)?.toInt() ?? 0) - ((orderData['service_fee'] as num?)?.toInt() ?? 0);
+    int actualComponentCost = ((_currentOrderData['estimated_price'] as num?)?.toInt() ?? 0) - ((_currentOrderData['service_fee'] as num?)?.toInt() ?? 0);
     int unexplainedCost = actualComponentCost - identifiedComponentCost;
 
     return Scaffold(
@@ -422,7 +582,7 @@ class DetailPesananScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    orderData['status'] ?? 'Menunggu Konfirmasi',
+                    _currentOrderData['status'] ?? 'Menunggu Konfirmasi',
                     style: TextStyle(
                       color: statusColor,
                       fontSize: 18,
@@ -431,7 +591,7 @@ class DetailPesananScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tanggal Pengajuan: ${_formatDate(orderData['created_at'])}',
+                    'Tanggal Pengajuan: ${_formatDate(_currentOrderData['created_at'])}',
                     style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
                 ],
@@ -471,7 +631,7 @@ class DetailPesananScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      orderData['admin_notes'],
+                      _currentOrderData['admin_notes'],
                       style: TextStyle(
                         color: Colors.grey.shade800,
                         fontSize: 14,
@@ -502,15 +662,15 @@ class DetailPesananScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildDataRow(
                     'Nama Lengkap',
-                    orderData['customer_name'] ?? '-',
+                    _currentOrderData['customer_name'] ?? '-',
                   ),
                   _buildDataRow(
                     'No. Telepon',
-                    orderData['customer_phone'] ?? '-',
+                    _currentOrderData['customer_phone'] ?? '-',
                   ),
                   _buildDataRow(
                     'Alamat Tujuan',
-                    orderData['shipping_address'] ?? '-',
+                    _currentOrderData['shipping_address'] ?? '-',
                   ),
                 ],
               ),
@@ -530,14 +690,14 @@ class DetailPesananScreen extends StatelessWidget {
                   _buildSectionHeader('Spesifikasi Proyek', Icons.memory),
                   Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
-                  _buildDataRow('Nama Proyek', orderData['project_title'] ?? '-'),
-                  _buildComponentList('Mikrokontroler', orderData['mcu_list']),
-                  _buildComponentList('Sensor', orderData['sensor_list']),
+                  _buildDataRow('Nama Proyek', _currentOrderData['project_title'] ?? '-'),
+                  _buildComponentList('Mikrokontroler', _currentOrderData['mcu_list']),
+                  _buildComponentList('Sensor', _currentOrderData['sensor_list']),
                   
-                  _buildDataRow('Konektivitas', _parseSpec(orderData['connectivity'])?['name'] ?? '-'),
-                  _buildDataRow('Platform Output', _parseSpec(orderData['output_platform'])?['name'] ?? '-'),
-                  _buildDataRow('Sumber Daya', _parseSpec(orderData['power_supply'])?['name'] ?? '-'),
-                  _buildDataRow('Bentuk Fisik', _parseSpec(orderData['enclosure'])?['name'] ?? '-'),
+                  _buildDataRow('Konektivitas', _parseSpec(_currentOrderData['connectivity'])?['name'] ?? '-'),
+                  _buildDataRow('Platform Output', _parseSpec(_currentOrderData['output_platform'])?['name'] ?? '-'),
+                  _buildDataRow('Sumber Daya', _parseSpec(_currentOrderData['power_supply'])?['name'] ?? '-'),
+                  _buildDataRow('Bentuk Fisik', _parseSpec(_currentOrderData['enclosure'])?['name'] ?? '-'),
 
                   const SizedBox(height: 16),
                   Text(
@@ -554,7 +714,7 @@ class DetailPesananScreen extends StatelessWidget {
                       border: Border.all(color: Colors.grey.shade200),
                     ),
                     child: Text(
-                      orderData['description'] ?? '-',
+                      _currentOrderData['description'] ?? '-',
                       style: TextStyle(
                         color: Colors.grey.shade800,
                         fontSize: 13,
@@ -595,7 +755,7 @@ class DetailPesananScreen extends StatelessWidget {
                     child: Divider(color: Color(0xFFEEEEEE), thickness: 1, height: 1),
                   ),
 
-                  _buildCostRow('Jasa Perakitan', orderData['service_fee'], isSubtotal: false),
+                  _buildCostRow('Jasa Perakitan', _currentOrderData['service_fee'], isSubtotal: false),
                   
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
@@ -613,7 +773,7 @@ class DetailPesananScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        _formatCurrency(orderData['estimated_price']),
+                        _formatCurrency(_currentOrderData['estimated_price']),
                         style: TextStyle(
                           color: Colors.grey.shade800,
                           fontSize: 14,
@@ -660,7 +820,7 @@ class DetailPesananScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        hasFinalPrice ? _formatCurrency(orderData['final_price']) : 'Menunggu Admin',
+                        hasFinalPrice ? _formatCurrency(_currentOrderData['final_price']) : 'Menunggu Admin',
                         style: TextStyle(
                           color: hasFinalPrice ? AppColors.primaryColor : Colors.orange.shade700,
                           fontSize: 18,
@@ -673,7 +833,7 @@ class DetailPesananScreen extends StatelessWidget {
               ),
             ),
 
-            if (hasFinalPrice && orderData['status']?.toString().toLowerCase() == 'menunggu konfirmasi') ...[
+            if (hasFinalPrice && (_currentOrderData['status']?.toString().toLowerCase() == 'menunggu konfirmasi' || _currentOrderData['status']?.toString().toLowerCase() == 'menunggu pembayaran')) ...[
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
@@ -694,7 +854,7 @@ class DetailPesananScreen extends StatelessWidget {
               ),
             ],
             
-            if (orderData['status']?.toString().toLowerCase() != 'dibatalkan' && orderData['status']?.toString().toLowerCase() != 'selesai') ...[
+            if (_currentOrderData['status']?.toString().toLowerCase() != 'dibatalkan' && _currentOrderData['status']?.toString().toLowerCase() != 'selesai') ...[
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,

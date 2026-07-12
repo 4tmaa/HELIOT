@@ -22,7 +22,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
   List<dynamic> bannerList = [];
   bool isLoadingTemplates = true;
   bool isLoadingBanners = true;
-  bool hasUnreadNotifications = false;
+  int unreadNotificationCount = 0;
   String userName = 'Memuat...';
 
   final List<Map<String, dynamic>> categoryList = [
@@ -100,12 +100,12 @@ class _BerandaScreenState extends State<BerandaScreen> {
       final cacheAge = await LocalDatabaseService.instance.getCachedData('unread_notifications_age');
       final now = DateTime.now().millisecondsSinceEpoch;
       final int lastChecked = cacheAge is int ? cacheAge : 0;
-      final cachedHasUnread = await LocalDatabaseService.instance.getCachedData('unread_notifications_flag');
+      final cachedCount = await LocalDatabaseService.instance.getCachedData('unread_notifications_count');
 
-      if (cachedHasUnread != null && (now - lastChecked < 60000)) {
+      if (cachedCount != null && (now - lastChecked < 60000)) {
         if (mounted) {
           setState(() {
-            hasUnreadNotifications = cachedHasUnread == true;
+            unreadNotificationCount = cachedCount is int ? cachedCount : 0;
           });
         }
         return;
@@ -115,20 +115,19 @@ class _BerandaScreenState extends State<BerandaScreen> {
           .from('notifications')
           .select('id')
           .eq('user_id', activeUser.id)
-          .eq('is_read', false)
-          .limit(1);
+          .eq('is_read', false);
 
-      final hasUnread = response.isNotEmpty;
-      await LocalDatabaseService.instance.saveToCache('unread_notifications_flag', hasUnread);
+      final count = response.length;
+      await LocalDatabaseService.instance.saveToCache('unread_notifications_count', count);
       await LocalDatabaseService.instance.saveToCache('unread_notifications_age', now);
 
       if (mounted) {
         setState(() {
-          hasUnreadNotifications = hasUnread;
+          unreadNotificationCount = count;
         });
       }
     } catch (e) {
-      if (mounted) setState(() => hasUnreadNotifications = false);
+      if (mounted) setState(() => unreadNotificationCount = 0);
     }
   }
 
@@ -376,23 +375,37 @@ class _BerandaScreenState extends State<BerandaScreen> {
                                 children: [
                                   IconButton(
                                     icon: Icon(
-                                      hasUnreadNotifications
+                                      unreadNotificationCount > 0
                                           ? Icons.notifications_active_rounded
                                           : Icons.notifications_none_rounded,
                                       color: Colors.white,
                                     ),
                                     onPressed: navigateToNotifications,
                                   ),
-                                  if (hasUnreadNotifications)
+                                  if (unreadNotificationCount > 0)
                                     Positioned(
-                                      top: 10,
-                                      right: 12,
+                                      top: 6,
+                                      right: 8,
                                       child: Container(
-                                        width: 10,
-                                        height: 10,
+                                        padding: const EdgeInsets.all(4),
                                         decoration: const BoxDecoration(
-                                          color: Colors.orangeAccent,
+                                          color: Colors.redAccent,
                                           shape: BoxShape.circle,
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 18,
+                                          minHeight: 18,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            unreadNotificationCount > 9 ? '9+' : unreadNotificationCount.toString(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
                                       ),
                                     ),
