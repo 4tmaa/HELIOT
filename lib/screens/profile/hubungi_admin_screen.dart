@@ -13,16 +13,16 @@ class HubungiAdminScreen extends StatefulWidget {
 class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
   final SupabaseClient supabaseClient = Supabase.instance.client;
   final TextEditingController _messageController = TextEditingController();
-  
+
   bool _isSubmitting = false;
   String _selectedCategory = 'Pertanyaan Umum';
-  
+
   final List<String> _categories = [
     'Pertanyaan Umum',
     'Kendala Teknis',
     'Status Pesanan',
     'Kerja Sama / Bisnis',
-    'Lainnya'
+    'Lainnya',
   ];
 
   @override
@@ -33,7 +33,11 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
 
   Future<void> _sendMessage() async {
     if (_messageController.text.trim().isEmpty) {
-      CustomToast.show(context, message: 'Pesan tidak boleh kosong.', type: ToastType.warning);
+      CustomToast.show(
+        context,
+        message: 'Pesan tidak boleh kosong.',
+        type: ToastType.warning,
+      );
       return;
     }
 
@@ -53,12 +57,20 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
 
       if (mounted) {
         _messageController.clear();
-        CustomToast.show(context, message: 'Pesan terkirim. Admin akan segera merespons.', type: ToastType.success);
+        CustomToast.show(
+          context,
+          message: 'Pesan terkirim. Admin akan segera merespons.',
+          type: ToastType.success,
+        );
         Navigator.pop(context);
       }
     } catch (error) {
       if (mounted) {
-        CustomToast.show(context, message: 'Gagal mengirim pesan: ${error.toString()}', type: ToastType.error);
+        CustomToast.show(
+          context,
+          message: 'Gagal mengirim pesan: ${error.toString()}',
+          type: ToastType.error,
+        );
       }
     } finally {
       if (mounted) {
@@ -75,8 +87,14 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: AppColors.primaryColor),
-        title: const Text('Hubungi Admin', style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: AppColors.mainTextColor),
+        title: const Text(
+          'Hubungi Admin',
+          style: TextStyle(
+            color: AppColors.mainTextColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -87,12 +105,20 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.support_agent_rounded, size: 80, color: AppColors.primaryColor),
+              const Icon(
+                Icons.support_agent_rounded,
+                size: 80,
+                color: AppColors.primaryColor,
+              ),
               const SizedBox(height: 16),
               const Text(
                 'Ada yang bisa kami bantu?',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primaryColor),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryColor,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -101,7 +127,14 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 40),
-              const Text('Kategori Pesan', style: TextStyle(color: AppColors.primaryColor, fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                'Kategori Pesan',
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -115,8 +148,15 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
                     isExpanded: true,
                     value: _selectedCategory,
                     dropdownColor: Colors.white,
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey),
-                    style: TextStyle(color: Colors.grey.shade800, fontSize: 16, fontWeight: FontWeight.w500),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Colors.grey,
+                    ),
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                     items: _categories.map((String category) {
                       return DropdownMenuItem<String>(
                         value: category,
@@ -132,12 +172,22 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text('Detail Pesan', style: TextStyle(color: AppColors.primaryColor, fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                'Detail Pesan',
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _messageController,
                 maxLines: 6,
-                style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  color: Colors.grey.shade800,
+                  fontWeight: FontWeight.w500,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Tuliskan pesan Anda secara detail di sini...',
                   hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -145,11 +195,17 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                      width: 1.5,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primaryColor, width: 2.0),
+                    borderSide: const BorderSide(
+                      color: AppColors.primaryColor,
+                      width: 2.0,
+                    ),
                   ),
                   contentPadding: const EdgeInsets.all(20),
                 ),
@@ -162,17 +218,32 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
                     backgroundColor: AppColors.primaryColor,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: _isSubmitting ? null : _sendMessage,
                   child: _isSubmitting
-                      ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
                       : const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.send_rounded, size: 20),
                             SizedBox(width: 12),
-                            Text('Kirim Pesan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text(
+                              'Kirim Pesan',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                 ),
