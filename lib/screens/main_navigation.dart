@@ -3,6 +3,7 @@ import 'home_screen.dart';
 import 'katalog_screen.dart';
 import 'pesanan_screen.dart';
 import 'profil_screen.dart';
+import 'package:flutter/services.dart';
 import '../utils/app_colors.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -30,9 +31,17 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: screenList[currentIndex],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: currentIndex == 0 ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        extendBody: true,
+        body: screenList[currentIndex],
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
         height: 65,
@@ -57,7 +66,7 @@ class _MainNavigationState extends State<MainNavigation> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildNavItem(IconData outlineIcon, IconData solidIcon, String label, int index) {
