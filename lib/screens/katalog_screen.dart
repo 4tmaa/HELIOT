@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../utils/app_colors.dart';
-import '../widgets/catalog/header_wave_painter.dart';
 import '../widgets/catalog/featured_component_card.dart';
 import '../widgets/catalog/grid_component_card.dart';
 import '../widgets/custom_loading.dart';
@@ -119,41 +118,41 @@ class _KatalogScreenState extends State<KatalogScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(32),
-              bottomRight: Radius.circular(32),
-            ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: CustomPaint(painter: HeaderWavePainter()),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(
-                    24,
-                    MediaQuery.of(context).padding.top + 24,
-                    24,
-                    20,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Row(
+                children: [
+                  const Text(
+                    'Katalog',
+                    style: TextStyle(
+                      color: AppColors.mainTextColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 28,
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 55,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Container(
+                height: 55,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
                         child: TextField(
                           controller: _searchController,
                           onChanged: (value) {
@@ -211,13 +210,9 @@ class _KatalogScreenState extends State<KatalogScreen> {
                             color: AppColors.mainTextColor,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
           Expanded(
             child: isLoading
                 ? _buildShimmerLoading()
@@ -230,6 +225,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
                   ),
           ),
         ],
+      ),
       ),
     );
   }
