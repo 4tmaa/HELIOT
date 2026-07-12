@@ -22,15 +22,15 @@ class BuatProyekTab extends StatefulWidget {
 
 class _BuatProyekTabState extends State<BuatProyekTab> {
   final SupabaseClient supabaseClient = Supabase.instance.client;
-  
+
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  
+
   Map<String, dynamic>? _selectedConnectivity;
   Map<String, dynamic>? _selectedEnclosure;
   Map<String, dynamic>? _selectedOutput;
   Map<String, dynamic>? _selectedPower;
-  
+
   bool _isSubmitting = false;
   bool _isLoadingData = true;
 
@@ -51,9 +51,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
       _titleController.text = CartService.instance.initialProjectTitle!;
     }
     if (CartService.instance.initialProjectDescription != null) {
-      _descriptionController.text = CartService.instance.initialProjectDescription!;
+      _descriptionController.text =
+          CartService.instance.initialProjectDescription!;
     }
-    
+
     _fetchAllOptions();
     CartService.instance.selectedMCUs.addListener(_onCartChanged);
     CartService.instance.selectedSensors.addListener(_onCartChanged);
@@ -74,8 +75,13 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
 
   Future<void> _fetchAllOptions() async {
     // Helper function to handle caching
-    Future<dynamic> _fetchWithCache(String cacheKey, Future<dynamic> Function() fetchCallback) async {
-      final cached = await LocalDatabaseService.instance.getCachedData(cacheKey);
+    Future<dynamic> _fetchWithCache(
+      String cacheKey,
+      Future<dynamic> Function() fetchCallback,
+    ) async {
+      final cached = await LocalDatabaseService.instance.getCachedData(
+        cacheKey,
+      );
       if (cached != null) return cached;
       final result = await fetchCallback();
       if (result != null) {
@@ -85,11 +91,20 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final compRes = await _fetchWithCache('components_proyek', () => supabaseClient.from('components').select('name, category, base_price, difficulty_score'));
+      final compRes = await _fetchWithCache(
+        'components_proyek',
+        () => supabaseClient
+            .from('components')
+            .select('name, category, base_price, difficulty_score'),
+      );
       if (compRes != null && mounted) {
         setState(() {
-          _mcuList = List<Map<String, dynamic>>.from(compRes.where((e) => e['category'] == 'Mikrokontroler'));
-          _sensorList = List<Map<String, dynamic>>.from(compRes.where((e) => e['category'] == 'Sensor'));
+          _mcuList = List<Map<String, dynamic>>.from(
+            compRes.where((e) => e['category'] == 'Mikrokontroler'),
+          );
+          _sensorList = List<Map<String, dynamic>>.from(
+            compRes.where((e) => e['category'] == 'Sensor'),
+          );
         });
       }
     } catch (e) {
@@ -97,22 +112,38 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final connRes = await _fetchWithCache('connectivity_options', () => supabaseClient.from('connectivity_options').select('name, base_price'));
-      if (connRes != null && mounted) setState(() => _connectivityList = List<Map<String, dynamic>>.from(connRes));
+      final connRes = await _fetchWithCache(
+        'connectivity_options',
+        () => supabaseClient
+            .from('connectivity_options')
+            .select('name, base_price'),
+      );
+      if (connRes != null && mounted)
+        setState(
+          () => _connectivityList = List<Map<String, dynamic>>.from(connRes),
+        );
     } catch (e) {
       debugPrint('Gagal memuat konektivitas');
     }
 
     try {
-      final enclRes = await _fetchWithCache('enclosure_options', () => supabaseClient.from('enclosure_options').select('name, base_price'));
+      final enclRes = await _fetchWithCache(
+        'enclosure_options',
+        () =>
+            supabaseClient.from('enclosure_options').select('name, base_price'),
+      );
       if (enclRes != null && mounted) {
         setState(() {
-          _enclosureList = List<Map<String, dynamic>>.from((enclRes as List).map((e) => {
-            ...(e as Map<String, dynamic>),
-            'is_tbd': true,
-            'tbd_label': 'Menyesuaikan dimensi',
-            'base_price': 0,
-          }));
+          _enclosureList = List<Map<String, dynamic>>.from(
+            (enclRes as List).map(
+              (e) => {
+                ...(e as Map<String, dynamic>),
+                'is_tbd': true,
+                'tbd_label': 'Menyesuaikan dimensi',
+                'base_price': 0,
+              },
+            ),
+          );
         });
       }
     } catch (e) {
@@ -120,20 +151,28 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final outRes = await _fetchWithCache('output_options', () => supabaseClient.from('output_options').select('name, base_price, difficulty_score'));
+      final outRes = await _fetchWithCache(
+        'output_options',
+        () => supabaseClient
+            .from('output_options')
+            .select('name, base_price, difficulty_score'),
+      );
       if (outRes != null && mounted) {
         setState(() {
-          _outputList = List<Map<String, dynamic>>.from((outRes as List).map((e) {
-            final map = e as Map<String, dynamic>;
-            final name = map['name'].toString().toLowerCase();
-            final isDynamic = name.contains('aplikasi') || name.contains('web');
-            return {
-              ...map,
-              'is_tbd': isDynamic,
-              'tbd_label': isDynamic ? 'Menyesuaikan fitur' : null,
-              'base_price': isDynamic ? 0 : map['base_price'],
-            };
-          }));
+          _outputList = List<Map<String, dynamic>>.from(
+            (outRes as List).map((e) {
+              final map = e as Map<String, dynamic>;
+              final name = map['name'].toString().toLowerCase();
+              final isDynamic =
+                  name.contains('aplikasi') || name.contains('web');
+              return {
+                ...map,
+                'is_tbd': isDynamic,
+                'tbd_label': isDynamic ? 'Menyesuaikan fitur' : null,
+                'base_price': isDynamic ? 0 : map['base_price'],
+              };
+            }),
+          );
         });
       }
     } catch (e) {
@@ -141,20 +180,30 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final pwrRes = await _fetchWithCache('power_options', () => supabaseClient.from('power_options').select('name, base_price, difficulty_score'));
+      final pwrRes = await _fetchWithCache(
+        'power_options',
+        () => supabaseClient
+            .from('power_options')
+            .select('name, base_price, difficulty_score'),
+      );
       if (pwrRes != null && mounted) {
         setState(() {
-          _powerList = List<Map<String, dynamic>>.from((pwrRes as List).map((e) {
-            final map = e as Map<String, dynamic>;
-            final name = map['name'].toString().toLowerCase();
-            final isDynamic = !name.contains('kabel') && !name.contains('gratis') && !name.contains('tidak ada');
-            return {
-              ...map,
-              'is_tbd': isDynamic,
-              'tbd_label': isDynamic ? 'Menyesuaikan spek' : null,
-              'base_price': isDynamic ? 0 : map['base_price'],
-            };
-          }));
+          _powerList = List<Map<String, dynamic>>.from(
+            (pwrRes as List).map((e) {
+              final map = e as Map<String, dynamic>;
+              final name = map['name'].toString().toLowerCase();
+              final isDynamic =
+                  !name.contains('kabel') &&
+                  !name.contains('gratis') &&
+                  !name.contains('tidak ada');
+              return {
+                ...map,
+                'is_tbd': isDynamic,
+                'tbd_label': isDynamic ? 'Menyesuaikan spek' : null,
+                'base_price': isDynamic ? 0 : map['base_price'],
+              };
+            }),
+          );
         });
       }
     } catch (e) {
@@ -162,11 +211,19 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     try {
-      final settingsRes = await _fetchWithCache('pricing_settings', () => supabaseClient.from('pricing_settings').select('base_service_fee, difficulty_multiplier').maybeSingle());
+      final settingsRes = await _fetchWithCache(
+        'pricing_settings',
+        () => supabaseClient
+            .from('pricing_settings')
+            .select('base_service_fee, difficulty_multiplier')
+            .maybeSingle(),
+      );
       if (settingsRes != null && mounted) {
         setState(() {
-          _baseServiceFee = (settingsRes['base_service_fee'] as num?)?.toInt() ?? 25000;
-          _difficultyMultiplier = (settingsRes['difficulty_multiplier'] as num?)?.toInt() ?? 15000;
+          _baseServiceFee =
+              (settingsRes['base_service_fee'] as num?)?.toInt() ?? 25000;
+          _difficultyMultiplier =
+              (settingsRes['difficulty_multiplier'] as num?)?.toInt() ?? 15000;
         });
       }
     } catch (e) {
@@ -201,21 +258,24 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     }
 
     if (_selectedConnectivity != null) {
-      componentCost += (_selectedConnectivity!['base_price'] as num?)?.toInt() ?? 0;
+      componentCost +=
+          (_selectedConnectivity!['base_price'] as num?)?.toInt() ?? 0;
     }
 
     if (_selectedOutput != null) {
       componentCost += (_selectedOutput!['base_price'] as num?)?.toInt() ?? 0;
-      totalDifficulty += (_selectedOutput!['difficulty_score'] as num?)?.toInt() ?? 0;
+      totalDifficulty +=
+          (_selectedOutput!['difficulty_score'] as num?)?.toInt() ?? 0;
     }
 
     if (_selectedPower != null) {
       componentCost += (_selectedPower!['base_price'] as num?)?.toInt() ?? 0;
-      totalDifficulty += (_selectedPower!['difficulty_score'] as num?)?.toInt() ?? 0;
+      totalDifficulty +=
+          (_selectedPower!['difficulty_score'] as num?)?.toInt() ?? 0;
     }
 
-    int serviceFee = currentMCUs.isEmpty && currentSensors.isEmpty 
-        ? 0 
+    int serviceFee = currentMCUs.isEmpty && currentSensors.isEmpty
+        ? 0
         : _baseServiceFee + (totalDifficulty * _difficultyMultiplier);
 
     return {
@@ -235,25 +295,52 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
             SizedBox(width: 8),
-            Text('Profil Belum Lengkap', style: TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold, fontSize: 18)),
+            Text(
+              'Profil Belum Lengkap',
+              style: TextStyle(
+                color: AppColors.mainTextColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
           ],
         ),
-        content: Text(message, style: const TextStyle(color: AppColors.secondaryTextColor, height: 1.5)),
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: AppColors.secondaryTextColor,
+            height: 1.5,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Nanti', style: TextStyle(color: AppColors.secondaryTextColor)),
+            child: const Text(
+              'Nanti',
+              style: TextStyle(color: AppColors.secondaryTextColor),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             onPressed: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => destinationScreen));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => destinationScreen),
+              );
             },
-            child: const Text('Lengkapi Sekarang', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Lengkapi Sekarang',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -264,8 +351,17 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
     final currentMCUs = CartService.instance.selectedMCUs.value;
     final currentSensors = CartService.instance.selectedSensors.value;
 
-    if (_titleController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty || currentMCUs.isEmpty || currentSensors.isEmpty || _selectedPower == null || _selectedOutput == null) {
-      CustomToast.show(context, message: 'Semua bidang wajib diisi.', type: ToastType.warning);
+    if (_titleController.text.trim().isEmpty ||
+        _descriptionController.text.trim().isEmpty ||
+        currentMCUs.isEmpty ||
+        currentSensors.isEmpty ||
+        _selectedPower == null ||
+        _selectedOutput == null) {
+      CustomToast.show(
+        context,
+        message: 'Semua bidang wajib diisi.',
+        type: ToastType.warning,
+      );
       return;
     }
 
@@ -275,35 +371,62 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
       final activeUser = supabaseClient.auth.currentUser;
       if (activeUser == null) throw Exception('Sesi tidak valid');
 
-      final profileRes = await supabaseClient.from('profiles').select('full_name, phone_number').eq('id', activeUser.id).maybeSingle();
-      if (profileRes == null || profileRes['full_name'] == null || profileRes['phone_number'] == null || profileRes['phone_number'].toString().isEmpty) {
+      final profileRes = await supabaseClient
+          .from('profiles')
+          .select('full_name, phone_number')
+          .eq('id', activeUser.id)
+          .maybeSingle();
+      if (profileRes == null ||
+          profileRes['full_name'] == null ||
+          profileRes['phone_number'] == null ||
+          profileRes['phone_number'].toString().isEmpty) {
         setState(() => _isSubmitting = false);
-        _showIncompleteProfileDialog('Untuk memastikan pesanan Anda dapat diproses dan dihubungi oleh admin, silakan lengkapi Nama dan Nomor Telepon di profil Anda terlebih dahulu.', const EditProfilScreen());
+        _showIncompleteProfileDialog(
+          'Untuk memastikan pesanan Anda dapat diproses dan dihubungi oleh admin, silakan lengkapi Nama dan Nomor Telepon di profil Anda terlebih dahulu.',
+          const EditProfilScreen(),
+        );
         return;
       }
 
-      final addressRes = await supabaseClient.from('shipping_addresses').select('full_address').eq('user_id', activeUser.id).maybeSingle();
-      if (addressRes == null || addressRes['full_address'] == null || addressRes['full_address'].toString().isEmpty) {
+      final addressRes = await supabaseClient
+          .from('shipping_addresses')
+          .select('full_address')
+          .eq('user_id', activeUser.id)
+          .maybeSingle();
+      if (addressRes == null ||
+          addressRes['full_address'] == null ||
+          addressRes['full_address'].toString().isEmpty) {
         setState(() => _isSubmitting = false);
-        _showIncompleteProfileDialog('Kami membutuhkan alamat pengiriman untuk mengirimkan alat yang sudah dirakit. Silakan atur alamat Anda terlebih dahulu.', const AlamatPengirimanScreen());
+        _showIncompleteProfileDialog(
+          'Kami membutuhkan alamat pengiriman untuk mengirimkan alat yang sudah dirakit. Silakan atur alamat Anda terlebih dahulu.',
+          const AlamatPengirimanScreen(),
+        );
         return;
       }
 
       final costs = _calculateCosts();
-      
-      final mcuListData = currentMCUs.map((e) => {
-        'name': e['item']['name'],
-        'qty': e['qty'],
-        'base_price': e['item']['base_price'],
-        'difficulty_score': e['item']['difficulty_score'],
-      }).toList();
 
-      final sensorListData = currentSensors.map((e) => {
-        'name': e['item']['name'],
-        'qty': e['qty'],
-        'base_price': e['item']['base_price'],
-        'difficulty_score': e['item']['difficulty_score'],
-      }).toList();
+      final mcuListData = currentMCUs
+          .map(
+            (e) => {
+              'name': e['item']['name'],
+              'qty': e['qty'],
+              'base_price': e['item']['base_price'],
+              'difficulty_score': e['item']['difficulty_score'],
+            },
+          )
+          .toList();
+
+      final sensorListData = currentSensors
+          .map(
+            (e) => {
+              'name': e['item']['name'],
+              'qty': e['qty'],
+              'base_price': e['item']['base_price'],
+              'difficulty_score': e['item']['difficulty_score'],
+            },
+          )
+          .toList();
 
       await supabaseClient.from('orders').insert({
         'user_id': activeUser.id,
@@ -337,7 +460,11 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
       }
     } catch (e) {
       if (mounted) {
-        CustomToast.show(context, message: 'Terjadi kesalahan: ${e.toString()}', type: ToastType.error);
+        CustomToast.show(
+          context,
+          message: 'Terjadi kesalahan: ${e.toString()}',
+          type: ToastType.error,
+        );
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -356,7 +483,10 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
               height: MediaQuery.of(context).size.height * 0.85,
               decoration: const BoxDecoration(
                 color: AppColors.backgroundColor,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
               ),
               child: Column(
                 children: [
@@ -364,15 +494,28 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
                     margin: const EdgeInsets.symmetric(vertical: 12),
                     height: 5,
                     width: 50,
-                    decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   const Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Text('Spesifikasi Tambahan', style: TextStyle(color: AppColors.mainTextColor, fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Spesifikasi Tambahan',
+                      style: TextStyle(
+                        color: AppColors.mainTextColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       child: Column(
                         children: [
                           KomponenSelectionCard(
@@ -453,17 +596,31 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: AppColors.primaryColor.withOpacity(0.05), borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.primaryColor.withOpacity(0.2))),
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.primaryColor.withOpacity(0.2),
+              ),
+            ),
             child: const Row(
               children: [
                 Icon(Icons.info_outline, color: AppColors.primaryColor),
                 SizedBox(width: 12),
-                Expanded(child: Text('Biaya jasa otomatis dihitung berdasarkan tingkat kesulitan komponen yang dipilih.', style: TextStyle(color: AppColors.mainTextColor, fontSize: 13))),
+                Expanded(
+                  child: Text(
+                    'Biaya jasa otomatis dihitung berdasarkan tingkat kesulitan komponen yang dipilih.',
+                    style: TextStyle(
+                      color: AppColors.mainTextColor,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 24),
-          
+
           MultiSelectSection(
             title: 'Mikrokontroler Utama *',
             subtitle: 'Pilih satu atau lebih otak sistem proyek.',
@@ -473,70 +630,53 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
             isMCU: true,
             isLoading: _isLoadingData,
           ),
-          
+
           MultiSelectSection(
             title: 'Sensor & Aktuator *',
-            subtitle: 'Pilih sensor yang dibutuhkan. Anda bisa memilih lebih dari satu.',
+            subtitle:
+                'Pilih sensor yang dibutuhkan. Anda bisa memilih lebih dari satu.',
             icon: Icons.sensors,
             sourceList: _sensorList,
             selectedList: currentSensors,
             isMCU: false,
             isLoading: _isLoadingData,
           ),
-          
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.grey.shade200),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))
-              ]
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.tune_rounded, color: AppColors.primaryColor),
+
+          SizedBox(
+            width: double.infinity,
+            height: 55,
+            child: OutlinedButton(
+              onPressed: () => _showSpesifikasiTambahanModal(context),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primaryColor,
+                backgroundColor: AppColors.primaryColor.withValues(alpha: 0.05),
+                side: BorderSide(
+                  color: AppColors.primaryColor.withValues(alpha: 0.5),
+                  width: 1.5,
                 ),
-                const SizedBox(width: 16),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Spesifikasi Tambahan', style: TextStyle(color: AppColors.mainTextColor, fontSize: 16, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 4),
-                      Text('Output, Daya, Koneksi, Enclosure', style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 12)),
-                    ],
-                  ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                OutlinedButton(
-                  onPressed: () => _showSpesifikasiTambahanModal(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primaryColor,
-                    side: BorderSide(color: AppColors.primaryColor.withValues(alpha: 0.5)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text('Atur', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              child: const Text(
+                'Atur Spesifikasi Tambahan',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
             ),
           ),
-          
+
           const Divider(height: 32, color: Color(0xFFEEEEEE), thickness: 2),
-          
+
           ProjectIdentityForm(
             titleController: _titleController,
             descriptionController: _descriptionController,
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           if (costs['total']! > 0)
             CostBreakdownCard(
               componentCost: costs['componentCost']!,
@@ -549,9 +689,27 @@ class _BuatProyekTabState extends State<BuatProyekTab> {
             width: double.infinity,
             height: 60,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor, elevation: 5, shadowColor: AppColors.primaryColor.withOpacity(0.4), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-              onPressed: _isSubmitting || _isLoadingData ? null : _submitProject,
-              child: _isSubmitting ? const CircularProgressIndicator(color: Colors.white) : const Text('Ajukan Pesanan', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                elevation: 5,
+                shadowColor: AppColors.primaryColor.withOpacity(0.4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              onPressed: _isSubmitting || _isLoadingData
+                  ? null
+                  : _submitProject,
+              child: _isSubmitting
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                      'Ajukan Pesanan',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
           ),
           SizedBox(height: 100),
