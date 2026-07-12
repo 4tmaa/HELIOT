@@ -19,7 +19,11 @@ class DetailPesananScreen extends StatelessWidget {
   String _formatCurrency(dynamic amount) {
     if (amount == null || amount == 0) return 'Menunggu Konfirmasi';
     try {
-      final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+      final formatter = NumberFormat.currency(
+        locale: 'id_ID',
+        symbol: 'Rp ',
+        decimalDigits: 0,
+      );
       return formatter.format(amount);
     } catch (e) {
       return amount.toString();
@@ -28,12 +32,17 @@ class DetailPesananScreen extends StatelessWidget {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'menunggu konfirmasi': return Colors.orangeAccent.shade700;
+      case 'menunggu konfirmasi':
+        return Colors.orangeAccent.shade700;
       case 'dirakit':
-      case 'proses': return Colors.blueAccent;
-      case 'selesai': return Colors.green;
-      case 'dibatalkan': return Colors.redAccent;
-      default: return AppColors.primaryColor;
+      case 'proses':
+        return Colors.blueAccent;
+      case 'selesai':
+        return Colors.green;
+      case 'dibatalkan':
+        return Colors.redAccent;
+      default:
+        return AppColors.primaryColor;
     }
   }
 
@@ -44,7 +53,14 @@ class DetailPesananScreen extends StatelessWidget {
         children: [
           Icon(icon, color: AppColors.primaryColor, size: 20),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(color: AppColors.primaryColor, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: const TextStyle(
+              color: AppColors.primaryColor,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -58,10 +74,20 @@ class DetailPesananScreen extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+            child: Text(
+              label,
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+            ),
           ),
           Expanded(
-            child: Text(value, style: TextStyle(color: Colors.grey.shade800, fontSize: 14, fontWeight: FontWeight.w500)),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.grey.shade800,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),
@@ -81,7 +107,7 @@ class DetailPesananScreen extends StatelessWidget {
         formattedText += '• $name (x$qty)\n';
       }
     }
-    
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -89,10 +115,20 @@ class DetailPesananScreen extends StatelessWidget {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+            child: Text(
+              label,
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+            ),
           ),
           Expanded(
-            child: Text(formattedText.trim(), style: TextStyle(color: Colors.grey.shade800, fontSize: 14, fontWeight: FontWeight.w500)),
+            child: Text(
+              formattedText.trim(),
+              style: TextStyle(
+                color: Colors.grey.shade800,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),
@@ -102,15 +138,24 @@ class DetailPesananScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(orderData['status'] ?? '');
-    final bool hasAdminNotes = orderData['admin_notes'] != null && orderData['admin_notes'].toString().trim().isNotEmpty;
-    final bool hasFinalPrice = orderData['final_price'] != null && orderData['final_price'] > 0;
+    final bool hasAdminNotes =
+        orderData['admin_notes'] != null &&
+        orderData['admin_notes'].toString().trim().isNotEmpty;
+    final bool hasFinalPrice =
+        orderData['final_price'] != null && orderData['final_price'] > 0;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: AppColors.primaryColor),
-        title: const Text('Detail Pesanan', style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: AppColors.mainTextColor),
+        title: const Text(
+          'Detail Pesanan',
+          style: TextStyle(
+            color: AppColors.mainTextColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -130,13 +175,23 @@ class DetailPesananScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Text(orderData['status'] ?? 'Menunggu Konfirmasi', style: TextStyle(color: statusColor, fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    orderData['status'] ?? 'Menunggu Konfirmasi',
+                    style: TextStyle(
+                      color: statusColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Text('Tanggal Pengajuan: ${_formatDate(orderData['created_at'])}', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                  Text(
+                    'Tanggal Pengajuan: ${_formatDate(orderData['created_at'])}',
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                  ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
             if (hasAdminNotes) ...[
               Container(
@@ -152,20 +207,37 @@ class DetailPesananScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.mark_email_unread_outlined, color: Colors.orange.shade800, size: 20),
+                        Icon(
+                          Icons.mark_email_unread_outlined,
+                          color: Colors.orange.shade800,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
-                        Text('Catatan Admin', style: TextStyle(color: Colors.orange.shade800, fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                          'Catatan Admin',
+                          style: TextStyle(
+                            color: Colors.orange.shade800,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(orderData['admin_notes'], style: TextStyle(color: Colors.grey.shade800, fontSize: 14, height: 1.5)),
+                    Text(
+                      orderData['admin_notes'],
+                      style: TextStyle(
+                        color: Colors.grey.shade800,
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 32),
             ],
 
-            
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -176,12 +248,24 @@ class DetailPesananScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionHeader('Identitas Pemesan', Icons.person_outline),
+                  _buildSectionHeader(
+                    'Identitas Pemesan',
+                    Icons.person_outline,
+                  ),
                   Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
-                  _buildDataRow('Nama Lengkap', orderData['customer_name'] ?? '-'),
-                  _buildDataRow('No. Telepon', orderData['customer_phone'] ?? '-'),
-                  _buildDataRow('Alamat Tujuan', orderData['shipping_address'] ?? '-'),
+                  _buildDataRow(
+                    'Nama Lengkap',
+                    orderData['customer_name'] ?? '-',
+                  ),
+                  _buildDataRow(
+                    'No. Telepon',
+                    orderData['customer_phone'] ?? '-',
+                  ),
+                  _buildDataRow(
+                    'Alamat Tujuan',
+                    orderData['shipping_address'] ?? '-',
+                  ),
                 ],
               ),
             ),
@@ -200,16 +284,31 @@ class DetailPesananScreen extends StatelessWidget {
                   _buildSectionHeader('Spesifikasi Proyek', Icons.memory),
                   Divider(color: Colors.grey.shade200, thickness: 1.5),
                   const SizedBox(height: 12),
-                  _buildDataRow('Nama Proyek', orderData['project_title'] ?? '-'),
+                  _buildDataRow(
+                    'Nama Proyek',
+                    orderData['project_title'] ?? '-',
+                  ),
                   _buildComponentList('Mikrokontroler', orderData['mcu_list']),
                   _buildComponentList('Sensor', orderData['sensor_list']),
-                  _buildDataRow('Konektivitas', orderData['connectivity'] ?? '-'),
-                  _buildDataRow('Platform Output', orderData['output_platform'] ?? '-'),
-                  _buildDataRow('Sumber Daya', orderData['power_supply'] ?? '-'),
+                  _buildDataRow(
+                    'Konektivitas',
+                    orderData['connectivity'] ?? '-',
+                  ),
+                  _buildDataRow(
+                    'Platform Output',
+                    orderData['output_platform'] ?? '-',
+                  ),
+                  _buildDataRow(
+                    'Sumber Daya',
+                    orderData['power_supply'] ?? '-',
+                  ),
                   _buildDataRow('Bentuk Fisik', orderData['enclosure'] ?? '-'),
-                  
+
                   const SizedBox(height: 16),
-                  Text('Deskripsi Cara Kerja:', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                  Text(
+                    'Deskripsi Cara Kerja:',
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  ),
                   const SizedBox(height: 8),
                   Container(
                     width: double.infinity,
@@ -219,7 +318,14 @@ class DetailPesananScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.grey.shade200),
                     ),
-                    child: Text(orderData['description'] ?? '-', style: TextStyle(color: Colors.grey.shade800, fontSize: 13, height: 1.5)),
+                    child: Text(
+                      orderData['description'] ?? '-',
+                      style: TextStyle(
+                        color: Colors.grey.shade800,
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -230,24 +336,63 @@ class DetailPesananScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: hasFinalPrice ? AppColors.primaryColor : Colors.white,
-                borderRadius: BorderRadius.circular(12), 
-                border: hasFinalPrice ? null : Border.all(color: Colors.grey.shade300, width: 1.5),
+                borderRadius: BorderRadius.circular(12),
+                border: hasFinalPrice
+                    ? null
+                    : Border.all(color: Colors.grey.shade300, width: 1.5),
               ),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Estimasi Awal', style: TextStyle(color: hasFinalPrice ? Colors.white70 : Colors.grey.shade600, fontSize: 14)),
-                      Text(_formatCurrency(orderData['estimated_price']), style: TextStyle(color: hasFinalPrice ? Colors.white70 : Colors.grey.shade800, fontSize: 14, decoration: hasFinalPrice ? TextDecoration.lineThrough : null)),
+                      Text(
+                        'Estimasi Awal',
+                        style: TextStyle(
+                          color: hasFinalPrice
+                              ? Colors.white70
+                              : Colors.grey.shade600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        _formatCurrency(orderData['estimated_price']),
+                        style: TextStyle(
+                          color: hasFinalPrice
+                              ? Colors.white70
+                              : Colors.grey.shade800,
+                          fontSize: 14,
+                          decoration: hasFinalPrice
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Harga Final', style: TextStyle(color: hasFinalPrice ? Colors.white : Colors.grey.shade800, fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text(hasFinalPrice ? _formatCurrency(orderData['final_price']) : 'Menunggu Admin', style: TextStyle(color: hasFinalPrice ? Colors.white : Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Harga Final',
+                        style: TextStyle(
+                          color: hasFinalPrice
+                              ? Colors.white
+                              : Colors.grey.shade800,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        hasFinalPrice
+                            ? _formatCurrency(orderData['final_price'])
+                            : 'Menunggu Admin',
+                        style: TextStyle(
+                          color: hasFinalPrice ? Colors.white : Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],

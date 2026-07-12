@@ -107,11 +107,11 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.inbox_outlined, size: 80, color: AppColors.secondaryTextColor.withOpacity(0.3)),
+            Icon(Icons.inbox_outlined, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 16),
-            const Text('Belum Ada Riwayat', style: TextStyle(color: AppColors.mainTextColor, fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Belum Ada Riwayat', style: TextStyle(color: Colors.grey.shade800, fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            const Text('Proyek yang Anda ajukan akan muncul di sini.', style: TextStyle(color: AppColors.secondaryTextColor)),
+            Text('Proyek yang Anda ajukan akan muncul di sini.', style: TextStyle(color: Colors.grey.shade600)),
           ],
         ),
       );
@@ -139,15 +139,9 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
             child: Container(
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: AppColors.surfaceColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  )
-                ]
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade300, width: 1.5),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -161,16 +155,16 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
                         Expanded(
                           child: Text(
                             order['project_title'] ?? 'Proyek Tanpa Nama',
-                            style: const TextStyle(color: AppColors.mainTextColor, fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: Colors.grey.shade800, fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: statusColor.withOpacity(0.3)),
+                            color: statusColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: statusColor.withValues(alpha: 0.3)),
                           ),
                           child: Text(
                             order['status'] ?? 'Menunggu',
@@ -182,36 +176,36 @@ class _RiwayatPesananTabState extends State<RiwayatPesananTab> {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        const Icon(Icons.memory, size: 14, color: AppColors.secondaryTextColor),
+                        Icon(Icons.memory, size: 14, color: Colors.grey.shade600),
                         const SizedBox(width: 6),
-                        Expanded(child: Text(mcuDisplay, style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 12), overflow: TextOverflow.ellipsis)),
+                        Expanded(child: Text(mcuDisplay, style: TextStyle(color: Colors.grey.shade600, fontSize: 12), overflow: TextOverflow.ellipsis)),
                       ],
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.sensors, size: 14, color: AppColors.secondaryTextColor),
+                        Icon(Icons.sensors, size: 14, color: Colors.grey.shade600),
                         const SizedBox(width: 6),
-                        Expanded(child: Text(sensorDisplay, style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 12), overflow: TextOverflow.ellipsis)),
+                        Expanded(child: Text(sensorDisplay, style: TextStyle(color: Colors.grey.shade600, fontSize: 12), overflow: TextOverflow.ellipsis)),
                       ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Divider(color: Color(0xFFEEEEEE), height: 1),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(color: Colors.grey.shade200, height: 1, thickness: 1.5),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           _formatDate(order['created_at']),
-                          style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 12),
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                         ),
                         Text(
                           order['final_price'] != null && order['final_price'] > 0 
                               ? _formatCurrency(order['final_price']) 
                               : _formatCurrency(order['estimated_price']),
                           style: TextStyle(
-                            color: order['final_price'] != null && order['final_price'] > 0 ? AppColors.primaryColor : AppColors.mainTextColor, 
+                            color: order['final_price'] != null && order['final_price'] > 0 ? AppColors.primaryColor : Colors.grey.shade800, 
                             fontSize: 14, 
                             fontWeight: FontWeight.bold
                           ),
