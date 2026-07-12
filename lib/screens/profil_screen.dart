@@ -26,9 +26,10 @@ class ProfilScreen extends StatefulWidget {
 class _ProfilScreenState extends State<ProfilScreen> {
   bool isLoading = true;
   String userName = 'Memuat...';
-  String userEmail = 'Memuat...';
+  String userEmail = '';
   String userPhone = '';
   String userAddress = '';
+  String? userAvatar;
 
   @override
   void initState() {
@@ -54,11 +55,13 @@ class _ProfilScreenState extends State<ProfilScreen> {
               userEmail = profileData['email'] ?? activeUser.email ?? '';
               userPhone = profileData['phone_number'] ?? 'Belum diatur';
               userAddress = profileData['address'] ?? 'Belum diatur';
+              userAvatar = profileData['avatar_url'];
             } else {
               userName = 'Pengguna Baru';
               userEmail = activeUser.email ?? '';
               userPhone = 'Belum diatur';
               userAddress = 'Belum diatur';
+              userAvatar = null;
             }
             isLoading = false;
           });
@@ -241,14 +244,17 @@ class _ProfilScreenState extends State<ProfilScreen> {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person_rounded,
-                      size: 40,
-                      color: _AppColors.primaryColor,
-                    ),
+                    backgroundImage: userAvatar != null ? NetworkImage(userAvatar!) : null,
+                    child: userAvatar == null 
+                      ? const Icon(
+                          Icons.person_rounded,
+                          size: 40,
+                          color: _AppColors.primaryColor,
+                        )
+                      : null,
                   ),
                   const SizedBox(height: 16),
                   Text(
