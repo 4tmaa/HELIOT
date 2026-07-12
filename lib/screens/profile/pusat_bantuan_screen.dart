@@ -93,16 +93,16 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
                 TextField(
                   controller: _searchController,
                   onChanged: _filterFaqs,
-                  style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w500),
                   decoration: InputDecoration(
                     hintText: 'Cari topik atau pertanyaan...',
-                    hintStyle: TextStyle(color: AppColors.primaryColor.withValues(alpha: 0.5)),
+                    hintStyle: TextStyle(color: Colors.grey.shade500),
                     prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryColor),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5),
+                      borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -119,7 +119,7 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
                 ? Center(
                     child: Text(
                       'Pertanyaan tidak ditemukan.',
-                      style: TextStyle(color: AppColors.primaryColor.withValues(alpha: 0.8), fontSize: 16),
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                     ),
                   )
                 : ListView.builder(
@@ -131,7 +131,7 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: AppColors.primaryColor, width: 1.5),
+                          border: Border.all(color: Colors.grey.shade300, width: 1.5),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Theme(
@@ -146,8 +146,8 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
                             tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                             title: Text(
                               faq['question']!,
-                              style: const TextStyle(
-                                color: AppColors.primaryColor,
+                              style: TextStyle(
+                                color: Colors.grey.shade800,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                               ),
@@ -158,7 +158,7 @@ class _PusatBantuanScreenState extends State<PusatBantuanScreen> {
                                 child: Text(
                                   faq['answer']!,
                                   style: TextStyle(
-                                    color: AppColors.primaryColor.withValues(alpha: 0.8),
+                                    color: Colors.grey.shade600,
                                     fontSize: 14,
                                     height: 1.5,
                                     fontWeight: FontWeight.w500,

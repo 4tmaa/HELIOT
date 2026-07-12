@@ -98,7 +98,7 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
               Text(
                 'Kirimkan pesan atau kendala Anda di bawah ini, tim kami akan membalas secepatnya.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: AppColors.primaryColor.withValues(alpha: 0.8)),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 40),
               const Text('Kategori Pesan', style: TextStyle(color: AppColors.primaryColor, fontSize: 16, fontWeight: FontWeight.bold)),
@@ -107,7 +107,7 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: AppColors.primaryColor, width: 1.5),
+                  border: Border.all(color: Colors.grey.shade300, width: 1.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -115,8 +115,8 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
                     isExpanded: true,
                     value: _selectedCategory,
                     dropdownColor: Colors.white,
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primaryColor),
-                    style: const TextStyle(color: AppColors.primaryColor, fontSize: 16, fontWeight: FontWeight.w500),
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey),
+                    style: TextStyle(color: Colors.grey.shade800, fontSize: 16, fontWeight: FontWeight.w500),
                     items: _categories.map((String category) {
                       return DropdownMenuItem<String>(
                         value: category,
@@ -137,15 +137,15 @@ class _HubungiAdminScreenState extends State<HubungiAdminScreen> {
               TextFormField(
                 controller: _messageController,
                 maxLines: 6,
-                style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+                style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                   hintText: 'Tuliskan pesan Anda secara detail di sini...',
-                  hintStyle: TextStyle(color: AppColors.primaryColor.withValues(alpha: 0.5)),
+                  hintStyle: TextStyle(color: Colors.grey.shade500),
                   filled: true,
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5),
+                    borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
