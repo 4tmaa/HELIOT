@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:heliot/utils/app_colors.dart';
 import 'package:heliot/services/cart_service.dart';
+import '../../screens/catalog/detail_komponen_screen.dart';
 import '../custom_toast.dart';
 
 class GridComponentCard extends StatelessWidget {
@@ -19,7 +20,16 @@ class GridComponentCard extends StatelessWidget {
     final int difficulty = (product['difficulty_score'] as num?)?.toInt() ?? 0;
     final String category = product['category'] ?? '';
 
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailKomponenScreen(product: product),
+          ),
+        );
+      },
+      child: Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceColor,
         borderRadius: BorderRadius.circular(16),
@@ -103,6 +113,7 @@ class GridComponentCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
