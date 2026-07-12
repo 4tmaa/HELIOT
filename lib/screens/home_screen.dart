@@ -125,7 +125,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
             expandedHeight: 110.0,
             toolbarHeight: 90.0,
             floating: false,
-            pinned: true,
+            pinned: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
