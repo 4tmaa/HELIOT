@@ -123,7 +123,7 @@ class KomponenSelectionCard extends StatelessWidget {
             curve: Curves.easeOutQuint,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: selectedValue != null ? AppColors.primaryColor.withValues(alpha: 0.03) : Colors.white,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: selectedValue != null ? AppColors.primaryColor.withValues(alpha: 0.6) : Colors.grey.shade200,
@@ -132,8 +132,8 @@ class KomponenSelectionCard extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: selectedValue != null ? AppColors.primaryColor.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
                 )
               ],
             ),

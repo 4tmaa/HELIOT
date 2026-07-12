@@ -71,20 +71,40 @@ class MultiSelectSection extends StatelessWidget {
                             },
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 12),
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppColors.surfaceColor,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(color: Colors.grey.shade200),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
+                                  Container(
+                                    width: 45,
+                                    height: 45,
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.grey.shade200),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: item['photo_url'] != null && item['photo_url'].toString().isNotEmpty
+                                          ? Image.network(
+                                              item['photo_url'],
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => Icon(icon, color: Colors.grey.shade400, size: 20),
+                                            )
+                                          : Icon(icon, color: Colors.grey.shade400, size: 20),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(item['name'], style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                                        Text(item['name'], style: const TextStyle(color: AppColors.mainTextColor, fontWeight: FontWeight.bold, fontSize: 15)),
                                         if (diff != null && diff > 0) ...[
                                           const SizedBox(height: 4),
                                           Container(
@@ -145,31 +165,32 @@ class MultiSelectSection extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primaryColor.withValues(alpha: 0.08), 
-                      blurRadius: 12, 
-                      offset: const Offset(0, 6)
+                      blurRadius: 6, 
+                      offset: const Offset(0, 3)
                     )
                   ],
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      width: 50,
+                      height: 50,
+                      padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [AppColors.primaryColor, AppColors.primaryColor.withValues(alpha: 0.8)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primaryColor.withValues(alpha: 0.3),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          )
-                        ],
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade200),
                       ),
-                      child: Icon(icon, color: Colors.white, size: 22),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: item['photo_url'] != null && item['photo_url'].toString().isNotEmpty
+                            ? Image.network(
+                                item['photo_url'],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Icon(icon, color: Colors.grey.shade400, size: 24),
+                              )
+                            : Icon(icon, color: Colors.grey.shade400, size: 24),
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(

@@ -34,16 +34,6 @@ class _PesananScreenState extends State<PesananScreen> {
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const Spacer(),
-                  Container(
-                    width: 45,
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.shopping_cart_checkout, color: AppColors.primaryColor),
-                  ),
                 ],
               ),
             ),
@@ -74,21 +64,29 @@ class _PesananScreenState extends State<PesananScreen> {
                           curve: Curves.easeOutQuint,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            color: _selectedIndex == 0 ? AppColors.primaryColor : Colors.transparent,
+                            color: _selectedIndex == 0
+                                ? AppColors.primaryColor
+                                : Colors.transparent,
                             borderRadius: BorderRadius.circular(26),
-                            boxShadow: _selectedIndex == 0 ? [
-                              BoxShadow(
-                                color: AppColors.primaryColor.withValues(alpha: 0.3),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              )
-                            ] : [],
+                            boxShadow: _selectedIndex == 0
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.primaryColor.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : [],
                           ),
                           child: Text(
                             'Buat Proyek',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: _selectedIndex == 0 ? Colors.white : AppColors.secondaryTextColor,
+                              color: _selectedIndex == 0
+                                  ? Colors.white
+                                  : AppColors.secondaryTextColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
@@ -105,21 +103,29 @@ class _PesananScreenState extends State<PesananScreen> {
                           curve: Curves.easeOutQuint,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            color: _selectedIndex == 1 ? AppColors.primaryColor : Colors.transparent,
+                            color: _selectedIndex == 1
+                                ? AppColors.primaryColor
+                                : Colors.transparent,
                             borderRadius: BorderRadius.circular(26),
-                            boxShadow: _selectedIndex == 1 ? [
-                              BoxShadow(
-                                color: AppColors.primaryColor.withValues(alpha: 0.3),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              )
-                            ] : [],
+                            boxShadow: _selectedIndex == 1
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.primaryColor.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : [],
                           ),
                           child: Text(
                             'Riwayat',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: _selectedIndex == 1 ? Colors.white : AppColors.secondaryTextColor,
+                              color: _selectedIndex == 1
+                                  ? Colors.white
+                                  : AppColors.secondaryTextColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
@@ -149,11 +155,12 @@ class _PesananScreenState extends State<PesananScreen> {
                     ),
                   );
                 },
-                child: _selectedIndex == 0 
+                child: _selectedIndex == 0
                     ? BuatProyekTab(
                         key: const ValueKey('buat_proyek'),
-                        onProjectSubmitted: () => setState(() => _selectedIndex = 1)
-                      ) 
+                        onProjectSubmitted: () =>
+                            setState(() => _selectedIndex = 1),
+                      )
                     : const RiwayatPesananTab(key: ValueKey('riwayat')),
               ),
             ),
