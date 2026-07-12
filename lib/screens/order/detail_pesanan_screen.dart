@@ -301,8 +301,25 @@ class DetailPesananScreen extends StatelessWidget {
     return null;
   }
 
-  Widget _buildCostRow(String label, dynamic amount, {bool isSubtotal = false}) {
-    if (amount == null || amount == 0) return const SizedBox.shrink();
+  Widget _buildCostRow(
+    String label, 
+    dynamic amount, {
+    bool isSubtotal = false, 
+    bool showIfZero = false,
+    bool hasFinalPrice = false,
+  }) {
+    if (amount == null) return const SizedBox.shrink();
+    if (amount == 0 && !showIfZero) return const SizedBox.shrink();
+
+    String displayAmount;
+    bool isPending = amount == 0 && showIfZero && !hasFinalPrice;
+
+    if (amount == 0 && showIfZero) {
+      displayAmount = hasFinalPrice ? 'Gratis' : 'Menyesuaikan';
+    } else {
+      displayAmount = _formatCurrency(amount);
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -317,11 +334,12 @@ class DetailPesananScreen extends StatelessWidget {
             ),
           ),
           Text(
-            _formatCurrency(amount),
+            displayAmount,
             style: TextStyle(
-              color: isSubtotal ? Colors.grey.shade800 : Colors.grey.shade600,
+              color: isPending ? Colors.orange.shade700 : (isSubtotal ? Colors.grey.shade800 : Colors.grey.shade600),
               fontSize: isSubtotal ? 14 : 13,
-              fontWeight: isSubtotal ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isPending || isSubtotal ? FontWeight.bold : FontWeight.normal,
+              fontStyle: isPending ? FontStyle.italic : FontStyle.normal,
             ),
           ),
         ],
@@ -565,10 +583,10 @@ class DetailPesananScreen extends StatelessWidget {
                   
                   _buildCostRow('Mikrokontroler', mcuCost),
                   _buildCostRow('Sensor & Aktuator', sensorCost),
-                  _buildCostRow('Konektivitas', connCost),
-                  _buildCostRow('Platform Output', outCost),
-                  _buildCostRow('Sumber Daya', pwrCost),
-                  _buildCostRow('Bentuk Fisik', encCost),
+                  _buildCostRow('Konektivitas', connCost, showIfZero: connSpec != null, hasFinalPrice: hasFinalPrice),
+                  _buildCostRow('Platform Output', outCost, showIfZero: outSpec != null, hasFinalPrice: hasFinalPrice),
+                  _buildCostRow('Sumber Daya', pwrCost, showIfZero: pwrSpec != null, hasFinalPrice: hasFinalPrice),
+                  _buildCostRow('Bentuk Fisik', encCost, showIfZero: encSpec != null, hasFinalPrice: hasFinalPrice),
                   if (unexplainedCost > 0)
                     _buildCostRow('Spesifikasi Lainnya', unexplainedCost),
                   
