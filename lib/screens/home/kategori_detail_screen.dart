@@ -103,24 +103,6 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            color: AppColors.backgroundColor,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primaryColor.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-            border: Border(
-              bottom: BorderSide(
-                color: AppColors.primaryColor.withOpacity(0.3),
-                width: 1.5,
-              ),
-            ),
-          ),
-        ),
         leading: Align(
           alignment: Alignment.center,
           child: Container(
@@ -131,7 +113,7 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
               color: AppColors.surfaceColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: AppColors.primaryColor.withOpacity(0.2),
+                color: AppColors.primaryColor.withValues(alpha: 0.2),
               ),
             ),
             child: IconButton(
@@ -199,7 +181,7 @@ class _KategoriDetailScreenState extends State<KategoriDetailScreen> {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
