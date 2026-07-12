@@ -43,7 +43,6 @@ class _KatalogScreenState extends State<KatalogScreen> {
           componentList = responseData;
           isLoading = false;
         });
-        CustomToast.show(context, message: 'Berhasil memuat katalog', type: ToastType.success);
       }
     } catch (error) {
       if (mounted) {
