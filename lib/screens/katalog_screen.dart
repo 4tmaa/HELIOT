@@ -111,38 +111,32 @@ class _KatalogScreenState extends State<KatalogScreen> {
                               hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                               border: InputBorder.none,
                               prefixIcon: const Icon(Icons.search, color: AppColors.primaryColor),
+                              suffixIcon: PopupMenuButton<int>(
+                                icon: const Icon(Icons.tune, color: AppColors.primaryColor),
+                                onSelected: (int index) {
+                                  setState(() {
+                                    _selectedIndex = index;
+                                  });
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  return List.generate(_categories.length, (index) {
+                                    return PopupMenuItem<int>(
+                                      value: index,
+                                      child: Text(
+                                        _categories[index],
+                                        style: TextStyle(
+                                          color: _selectedIndex == index ? AppColors.primaryColor : AppColors.mainTextColor,
+                                          fontWeight: _selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                      ),
+                                    );
+                                  });
+                                },
+                              ),
                               contentPadding: const EdgeInsets.symmetric(vertical: 18),
                             ),
                             style: const TextStyle(color: AppColors.mainTextColor),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(_categories.length, (index) {
-                            final isSelected = _selectedIndex == index;
-                            return GestureDetector(
-                              onTap: () => setState(() => _selectedIndex = index),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeOutQuint,
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: isSelected ? Colors.white : Colors.white.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: isSelected ? Colors.white : Colors.transparent),
-                                ),
-                                child: Text(
-                                  _categories[index],
-                                  style: TextStyle(
-                                    color: isSelected ? AppColors.primaryColor : Colors.white,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
                         ),
                       ],
                     ),
