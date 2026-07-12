@@ -144,7 +144,8 @@ class _KatalogScreenState extends State<KatalogScreen> {
                 height: 55,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: AppColors.primaryColor, width: 1.5),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
