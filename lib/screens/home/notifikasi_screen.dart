@@ -95,7 +95,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Colors.white,
       body: RefreshIndicator(
         color: AppColors.primaryColor,
         onRefresh: _fetchAndMarkNotifications,
@@ -103,22 +103,13 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
-              expandedHeight: 90.0,
-              toolbarHeight: 70.0,
               pinned: true,
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               elevation: 0,
-              iconTheme: const IconThemeData(color: Colors.white),
+              scrolledUnderElevation: 0,
+              iconTheme: const IconThemeData(color: AppColors.primaryColor),
               centerTitle: true,
-              title: const Text('Notifikasi', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-              flexibleSpace: FlexibleSpaceBar(
-                background: ClipRRect(
-                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(32), bottomRight: Radius.circular(32)),
-                  child: CustomPaint(
-                    painter: NotifikasiHeaderPainter(),
-                  ),
-                ),
-              ),
+              title: const Text('Notifikasi', style: TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.bold, fontSize: 18)),
             ),
             if (_isLoading)
               SliverList(
@@ -136,11 +127,11 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.notifications_off_outlined, size: 80, color: AppColors.secondaryTextColor.withOpacity(0.3)),
+                      Icon(Icons.notifications_off_outlined, size: 80, color: Colors.grey.shade300),
                       const SizedBox(height: 16),
-                      const Text('Belum Ada Notifikasi', style: TextStyle(color: AppColors.mainTextColor, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Belum Ada Notifikasi', style: TextStyle(color: Colors.grey.shade800, fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      const Text('Pemberitahuan terkait pesanan akan muncul di sini.', style: TextStyle(color: AppColors.secondaryTextColor)),
+                      Text('Pemberitahuan terkait pesanan akan muncul di sini.', style: TextStyle(color: Colors.grey.shade600)),
                     ],
                   ),
                 ),
@@ -159,10 +150,9 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: isRead ? AppColors.surfaceColor : style['color'].withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: isRead ? Colors.transparent : style['color'].withOpacity(0.3)),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))],
+                          color: isRead ? Colors.white : style['color'].withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: isRead ? Colors.grey.shade300 : style['color'].withValues(alpha: 0.3), width: 1.5),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +160,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: style['color'].withOpacity(0.1),
+                                color: style['color'].withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(style['icon'], color: style['color'], size: 24),
@@ -186,7 +176,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                                       Expanded(
                                         child: Text(
                                           notif['title'] ?? 'Pemberitahuan',
-                                          style: TextStyle(color: AppColors.mainTextColor, fontSize: 15, fontWeight: isRead ? FontWeight.bold : FontWeight.w900),
+                                          style: TextStyle(color: Colors.grey.shade800, fontSize: 15, fontWeight: isRead ? FontWeight.bold : FontWeight.w900),
                                         ),
                                       ),
                                       if (!isRead)
@@ -201,12 +191,12 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                                   const SizedBox(height: 6),
                                   Text(
                                     notif['message'] ?? '',
-                                    style: const TextStyle(color: AppColors.secondaryTextColor, fontSize: 13, height: 1.4),
+                                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13, height: 1.4),
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
                                     _formatTime(notif['created_at']),
-                                    style: TextStyle(color: AppColors.secondaryTextColor.withOpacity(0.7), fontSize: 11, fontWeight: FontWeight.w600),
+                                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11, fontWeight: FontWeight.w600),
                                   ),
                                 ],
                               ),
@@ -224,30 +214,4 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       ),
     );
   }
-}
-
-class NotifikasiHeaderPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
-    
-    paint.color = const Color(0xFFD92027);
-    canvas.drawRect(Offset.zero & size, paint);
-
-    paint.color = const Color(0xFFB01A20);
-    final path1 = Path()
-      ..moveTo(0, size.height * 0.7)
-      ..quadraticBezierTo(size.width * 0.3, size.height * 1.0, size.width * 0.7, size.height * 0.6)
-      ..quadraticBezierTo(size.width * 0.9, size.height * 0.4, size.width, size.height * 0.5)
-      ..lineTo(size.width, 0)
-      ..lineTo(0, 0)
-      ..close();
-    canvas.drawPath(path1, paint);
-
-    paint.color = Colors.white.withOpacity(0.05);
-    canvas.drawCircle(Offset(size.width * 0.85, size.height * 0.3), size.width * 0.25, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
