@@ -204,6 +204,88 @@ class DetailPesananScreen extends StatelessWidget {
     );
   }
 
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+            SizedBox(width: 8),
+            Text('Hapus Pesanan?'),
+          ],
+        ),
+        content: const Text('Apakah Anda yakin ingin menghapus pesanan ini? Pesanan akan dibatalkan dan dihapus secara permanen dari riwayat.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await Supabase.instance.client.from('orders').delete().eq('id', orderData['id']);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+              } catch (e) {
+                debugPrint('Error deleting order: $e');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Hapus', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCancelDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.cancel_outlined, color: Colors.redAccent),
+            SizedBox(width: 8),
+            Text('Batalkan Pesanan?'),
+          ],
+        ),
+        content: const Text('Apakah Anda yakin ingin membatalkan pesanan ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tidak', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await Supabase.instance.client.from('orders').update({'status': 'Dibatalkan'}).eq('id', orderData['id']);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+              } catch (e) {
+                debugPrint('Error cancelling order: $e');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Ya, Batalkan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(orderData['status'] ?? '');
@@ -228,6 +310,12 @@ class DetailPesananScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+            onPressed: () => _showDeleteDialog(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -496,6 +584,24 @@ class DetailPesananScreen extends StatelessWidget {
                 ),
               ),
             ],
+            
+            if (orderData['status']?.toString().toLowerCase() != 'dibatalkan' && orderData['status']?.toString().toLowerCase() != 'selesai') ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => _showCancelDialog(context),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.redAccent,
+                    side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Batalkan Pesanan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+
             const SizedBox(height: 40),
           ],
         ),
