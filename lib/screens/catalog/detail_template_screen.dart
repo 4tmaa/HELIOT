@@ -40,6 +40,7 @@ class _DetailTemplateScreenState extends State<DetailTemplateScreen> {
         });
       }
     } catch (e) {
+      print('FETCH ERROR: $e');
       if (mounted) {
         setState(() {
           _isFetchingComponents = false;
@@ -82,7 +83,7 @@ class _DetailTemplateScreenState extends State<DetailTemplateScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const MainNavigation(initialIndex: 1),
+          builder: (context) => const MainNavigation(initialIndex: 2),
         ),
         (route) => false,
       );
