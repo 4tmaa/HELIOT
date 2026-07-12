@@ -62,3 +62,6 @@ macos/Runner/GoogleService-Info.plist
 
 # Supabase
 supabase/.temp/
+
+# Helper Files
+database_schema.md
