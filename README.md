@@ -57,18 +57,12 @@ Pastikan sistem Anda sudah terinstal:
 ## 📸 Tampilan Aplikasi (Screenshots)
 
 <div align="center">
-  <img width="200" alt="Screenshot 1" src="https://github.com/user-attachments/assets/c6861ae3-e059-44b7-8c51-458d7ad5a892" />
-  <img width="200" alt="Screenshot 2" src="https://github.com/user-attachments/assets/9f01adb2-8342-430e-aeaf-f972f117b564" />
-  <img width="200" alt="Screenshot 3" src="https://github.com/user-attachments/assets/b28fc203-a615-4ea3-983e-08c49b072d73" />
-  <img width="200" alt="Screenshot 4" src="https://github.com/user-attachments/assets/942b810a-a118-4893-8182-19c0eecf52af" />
-  <img width="200" alt="Screenshot 5" src="https://github.com/user-attachments/assets/15393ba8-c247-4970-b184-9ce324706ad9" />
-  <img width="200" alt="Screenshot 6" src="https://github.com/user-attachments/assets/66d5df09-ab07-41fc-94b1-f7e66e504d78" />
-  <img width="200" alt="Screenshot 7" src="https://github.com/user-attachments/assets/be6f60c7-44e1-4d78-8156-09182d47eb00" />
-  <img width="200" alt="Screenshot 8" src="https://github.com/user-attachments/assets/23edac67-3c44-434e-aaf2-e19d011caea9" />
-  <img width="200" alt="Screenshot 9" src="https://github.com/user-attachments/assets/9b2bd30f-ad97-4555-abbf-5dd6150ee933" />
-  <img width="200" alt="Screenshot 10" src="https://github.com/user-attachments/assets/13ee876f-d2fc-4c38-8962-80af238e2b8a" />
-  <img width="200" alt="Screenshot 11" src="https://github.com/user-attachments/assets/c9f86796-6c06-4646-b396-baf978e35d7e" />
-  <img width="200" alt="Screenshot 12" src="https://github.com/user-attachments/assets/6bb2a153-24e3-41c8-8911-7f715925f92f" />
+<img width="1794" height="876" alt="banner_heliot" src="https://github.com/user-attachments/assets/bdee49d5-aa2e-4d9f-b812-44ebad757193" />
+<img width="249" alt="mockup1" src="https://github.com/user-attachments/assets/fe02e272-01de-4376-936a-4a15e07eb168" />
+<img width="249" alt="mockup2" src="https://github.com/user-attachments/assets/6664f868-ec9f-4876-8738-c33e6002cf3c" />
+<img width="249" alt="mockup3" src="https://github.com/user-attachments/assets/4b835c59-b740-486e-8c93-47f59edeb6e7" />
+<img width="249" alt="mockup4" src="https://github.com/user-attachments/assets/5fc4204e-571f-4fd9-8b34-54ee9cb19b98" />
+
 </div>
 
 ## 🤝 Penutup
