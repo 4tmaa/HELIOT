@@ -58,10 +58,10 @@ Pastikan sistem Anda sudah terinstal:
 
 <div align="center">
 <img width="1794" height="876" alt="banner_heliot" src="https://github.com/user-attachments/assets/bdee49d5-aa2e-4d9f-b812-44ebad757193" />
-<img width="220" alt="mockup1" src="https://github.com/user-attachments/assets/fe02e272-01de-4376-936a-4a15e07eb168" />
-<img width="220" alt="mockup2" src="https://github.com/user-attachments/assets/6664f868-ec9f-4876-8738-c33e6002cf3c" />
-<img width="220" alt="mockup3" src="https://github.com/user-attachments/assets/4b835c59-b740-486e-8c93-47f59edeb6e7" />
-<img width="220" alt="mockup4" src="https://github.com/user-attachments/assets/5fc4204e-571f-4fd9-8b34-54ee9cb19b98" />
+<img width="249" alt="mockup1" src="https://github.com/user-attachments/assets/fe02e272-01de-4376-936a-4a15e07eb168" />
+<img width="249" alt="mockup2" src="https://github.com/user-attachments/assets/6664f868-ec9f-4876-8738-c33e6002cf3c" />
+<img width="249" alt="mockup3" src="https://github.com/user-attachments/assets/4b835c59-b740-486e-8c93-47f59edeb6e7" />
+<img width="249" alt="mockup4" src="https://github.com/user-attachments/assets/5fc4204e-571f-4fd9-8b34-54ee9cb19b98" />
 
 </div>
 
