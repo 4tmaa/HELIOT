@@ -1,4 +1,4 @@
-﻿package com.example.heliot
+﻿package com.dna.iotplatfrom
 
 import io.flutter.embedding.android.FlutterActivity
 
