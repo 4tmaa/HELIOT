@@ -29,6 +29,20 @@ serve(async (req: Request) => {
         notification: {
           title: record.title,
           body: record.message,
+          imageUrl: 'https://raw.githubusercontent.com/4tmaa/HELIOT/main/assets/icon.jpeg'
+        },
+        android: {
+          notification: {
+            sound: 'notification',
+            defaultSound: false,
+          }
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'notification.wav'
+            }
+          }
         },
         token: profile.fcm_token,
       }
