@@ -35,6 +35,7 @@ serve(async (req: Request) => {
           notification: {
             sound: 'notification',
             defaultSound: false,
+            channelId: 'heliot_channel'
           }
         },
         apns: {
